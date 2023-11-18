@@ -39,7 +39,7 @@ export const getSolutionOuts = async ({
   isDeposit = false,
 }: any): Promise<any> => {
   if (typeof totalRequired !== 'bigint') {
-    totalRequired = BigInt(formatInteger(totalRequired, 12));
+    totalRequired = BigInt(formatInteger(totalRequired, 18));
   }
 
   const totalSpend = calculateTotalSpend(utxosIn);
@@ -132,7 +132,7 @@ export const getSolutionBatch = async ({
   excludedUTXOIDPositions = [],
 }: any): Promise<any> => {
   if (typeof totalRequired !== 'bigint') {
-    totalRequired = BigInt(formatInteger(totalRequired, 12));
+    totalRequired = BigInt(formatInteger(totalRequired, 18));
   }
 
   const removedZeroUTXOs = filterZeroUTXOs(treeBalance.utxos);

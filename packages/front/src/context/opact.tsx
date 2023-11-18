@@ -1,9 +1,10 @@
-import { getRandomWallet, getWalletFromMnemonic } from '@/sdk';
+import { computeInputs, getDepositSoluctionBatch, getRandomWallet, getWalletFromMnemonic } from '@/sdk';
 import { walletStorage } from '@/utils';
 import React, { createContext, useReducer, useContext, useState, useEffect } from 'react';
 import {
   buildProof,
-} from '@/utils/sdk'
+} from '@/utils/proof'
+import { loadArtifact } from '@/utils/artifacts';
 
 const initialState = {
   wallet: null,
@@ -15,6 +16,7 @@ const OpactContext = createContext<any>({
   global: { ...initialState },
   createRandomWallet: () => {},
   disconnect: () => {},
+  sendDeposit: () => {},
 });
 
 const reducer = (state: any, updated: any ) => {
@@ -26,13 +28,15 @@ const reducer = (state: any, updated: any ) => {
       }
     }
 
-    case 'setLoadingDepoist': {
+    case 'setLoadingDeposit': {
       return {
         ...state,
         loadingDeposit: updated.payload
       }
     }
   }
+
+  return state
 }
 
 const OpactContextProvider = ({ children }: any) => {
@@ -62,6 +66,8 @@ const OpactContextProvider = ({ children }: any) => {
 
   useEffect(() => {
     (async () => {
+      await loadArtifact()
+
       const cached = await walletStorage.get()
 
       if (!cached) {
@@ -77,8 +83,10 @@ const OpactContextProvider = ({ children }: any) => {
     })()
   }, [])
 
-  const sendDeposit = () => {
-    if (global.loadingDeposit) {
+  const sendDeposit = async ({
+    amount,
+  }) => {
+    if (global.loadingDeposit || !global.wallet) {
       return
     }
 
@@ -87,26 +95,26 @@ const OpactContextProvider = ({ children }: any) => {
       payload: true,
     })
 
+    const { wallet } = global
+
+    const batch = await getDepositSoluctionBatch({
+      senderWallet: wallet,
+      totalRequired: 10,
+      selectedToken: 'erc2020',
+    });
+
+    const { inputs } = await computeInputs({
+      batch,
+      wallet,
+    });
+
     const publicArgs = await buildProof({
-      fee: state.fee,
-      note: state.note,
-      ticket: state.ticket,
-      relayer: state.relayer,
-      receiver: state.receiver,
-      callbackProgress: (message: string) => {
-        if (message === 'start') {
-          dispatch({
-            loading: false,
-            generatingProof: true
-          })
+      inputs,
+    })
 
-          return
-        }
-
-        dispatch({
-          progress: message
-        })
-      }
+    dispatch({
+      type: 'setLoadingDeposit',
+      payload: false,
     })
   }
 
@@ -116,7 +124,8 @@ const OpactContextProvider = ({ children }: any) => {
         global,
         dispatchState,
         createRandomWallet,
-        disconnect
+        disconnect,
+        sendDeposit,
       }}
     >
       {children}
