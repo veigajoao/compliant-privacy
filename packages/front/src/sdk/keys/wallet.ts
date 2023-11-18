@@ -5,7 +5,7 @@ import { generateMnemonic, mnemonicToSeed } from './bip39'
 import { deriveBabyJubKeysFromEth } from './babyjub';
 import { combineHex } from '../util/hex';
 
-export const getWalletFromSeed = ({ seed }: { seed: Uint8Array }) => {
+export const getWalletFromSeed = ({ seed, mnemonic }: { seed: Uint8Array, mnemonic: string }) => {
   const hdkey = HDKey.fromMasterSeed(seed);
 
   const address = getWalletAddress(hdkey)
@@ -18,7 +18,14 @@ export const getWalletFromSeed = ({ seed }: { seed: Uint8Array }) => {
     pubkey,
     pvtkey,
     address,
+    mnemonic,
   }
+}
+
+export const getWalletFromMnemonic = (mnemonic: string) => {
+  const seed = mnemonicToSeed(mnemonic)
+
+  return getWalletFromSeed(seed)
 }
 
 export const getRandomWallet = (): any => {

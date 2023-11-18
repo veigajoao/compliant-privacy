@@ -1,9 +1,23 @@
 import { ButtonSecondary } from "../button-secondary";
-import { Arrow } from "@/components/assets/arrow";
 import { Container } from "../container";
-import { ExclamationTriangleIcon } from "@heroicons/react/24/outline";
+import { useOpactContext } from "@/context/opact";
 
 export function Header() {
+  const {
+    global,
+    disconnect,
+    createRandomWallet,
+  } = useOpactContext()
+
+  const shortenAddress = (address: string, chars = 8): string => {
+    if (!address) {
+      return "";
+    }
+
+    return `${address.slice(0, chars)}...${address.slice(-chars)}`;
+  };
+
+
   return (
     <header className="relative z-50">
       <nav
@@ -40,13 +54,26 @@ export function Header() {
           </div>
 
           <div className="flex items-center gap-6">
-            <ButtonSecondary
-              withIcon={true}
-              disabled={false}
-              isLoading={false}
-              onClick={() => {}}
-              text="Connect Wallet"
-            />
+            {global.wallet
+              ? (
+                <ButtonSecondary
+                  withIcon={true}
+                  disabled={false}
+                  isLoading={false}
+                  onClick={() => disconnect()}
+                  text={shortenAddress(global.wallet.pubkey)}
+                />
+              )
+              : (
+                <ButtonSecondary
+                  withIcon={true}
+                  disabled={false}
+                  isLoading={false}
+                  onClick={() => createRandomWallet()}
+                  text="Generate Random Wallet"
+                />
+              )
+            }
           </div>
         </Container>
       </nav>

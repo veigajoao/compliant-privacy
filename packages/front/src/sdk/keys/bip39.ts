@@ -13,6 +13,7 @@ export const mnemonicToSeed = (mnemonic: MnemonicType, password: MnemonicPasswor
 
   return {
     seed,
+    mnemonic,
     seedHex: toHex(seed)
   }
 }
