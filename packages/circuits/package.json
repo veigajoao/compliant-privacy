@@ -18,7 +18,8 @@
     "fullsetup": "yarn run setup1 && yarn run setup2 && yarn run setup3 && yarn run setup4 && yarn run setup5 && yarn run setup6",
     "circuit:setup": "yarn run circuit:compile && yarn run fullsetup",
     "circuit:tests": "mkdir -p out_tests && cd out_tests && circom ../test/circuits/test_utxo.circom --r1cs --wasm --sym --c && circom ../test/circuits/test_merkleproofposeidon.circom --r1cs --wasm --sym --c",
-    
+    "gencontract": "snarkjs zkey export solidityverifier out/transaction_0001.zkey ../contracts/src/verifier.sol",
+
     "generate-circuit-1x2": "yarn ejs circuits/ejs/transaction.ejs.circom -f circuits/ejs/transaction_1x2.json -o circuits/transaction_1x2.circom",
     "generate-circuit-2x2": "yarn ejs circuits/ejs/transaction.ejs.circom -f circuits/ejs/transaction_2x2.json -o circuits/transaction_2x2.circom",
     "generate-circuit-3x2": "yarn ejs circuits/ejs/transaction.ejs.circom -f circuits/ejs/transaction_3x2.json -o circuits/transaction_3x2.circom",

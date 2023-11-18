@@ -1,0 +1,11 @@
+{
+  "name": "contracts",
+  "version": "0.0.1",
+  "description": "Contracts for project",
+  "scripts": {
+    "hasher:compile": "node ./scripts/compileHasher.js"
+  },
+  "devDependencies": {
+    "circomlib": "^2.0.5"
+  }
+}
