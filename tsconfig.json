@@ -1,16 +1,29 @@
 {
   "compilerOptions": {
-    "esModuleInterop": true,
-    "exactOptionalPropertyTypes": true,
-    "forceConsistentCasingInFileNames": true,
-    "lib": ["ES2020", "DOM"],
-    "module": "CommonJS",
+    "module": "esnext",
+    "target": "esnext",
     "moduleResolution": "node",
+    "jsx": "preserve",
+    "downlevelIteration": true,
+    /* noEmit - Snowpack builds (emits) files, not tsc. */
     "noEmit": true,
-    "noErrorTruncation": true,
-    "noUncheckedIndexedAccess": true,
-    "skipLibCheck": true,
+    /* Additional Options */
     "strict": true,
-    "target": "es2020"
-  }
+    "sourceMap": false,
+    "skipLibCheck": true,
+    "types": ["react", "jest", "node"],
+    "forceConsistentCasingInFileNames": true,
+    "resolveJsonModule": true,
+    "allowSyntheticDefaultImports": true,
+    "skipDefaultLibCheck": true,
+    "importsNotUsedAsValues": "error",
+    "isolatedModules": true,
+    "typeRoots": ["@types/"],
+    "baseUrl": ".",
+    "paths": {
+      "@relayer": ["./packages/src/*"]
+    }
+  },
+  "exclude": ["node_modules"],
+  "include": ["./packages/**/*"]
 }
