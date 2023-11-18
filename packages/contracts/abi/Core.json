@@ -25,19 +25,6 @@
   },
   {
     "type": "function",
-    "name": "MAX_EXT_AMOUNT",
-    "inputs": [],
-    "outputs": [
-      {
-        "name": "",
-        "type": "uint256",
-        "internalType": "uint256"
-      }
-    ],
-    "stateMutability": "view"
-  },
-  {
-    "type": "function",
     "name": "MERKLE_TREE_HEIGHT",
     "inputs": [],
     "outputs": [
@@ -255,19 +242,6 @@
   },
   {
     "type": "function",
-    "name": "nullifierCounter",
-    "inputs": [],
-    "outputs": [
-      {
-        "name": "",
-        "type": "uint256",
-        "internalType": "uint256"
-      }
-    ],
-    "stateMutability": "view"
-  },
-  {
-    "type": "function",
     "name": "nullifiers",
     "inputs": [
       {
@@ -281,19 +255,6 @@
         "name": "",
         "type": "bool",
         "internalType": "bool"
-      }
-    ],
-    "stateMutability": "view"
-  },
-  {
-    "type": "function",
-    "name": "nullifiersLength",
-    "inputs": [],
-    "outputs": [
-      {
-        "name": "",
-        "type": "uint256",
-        "internalType": "uint256"
       }
     ],
     "stateMutability": "view"
@@ -743,19 +704,19 @@
       {
         "name": "commitment",
         "type": "uint256",
-        "indexed": true,
+        "indexed": false,
         "internalType": "uint256"
       },
       {
         "name": "index",
         "type": "uint256",
-        "indexed": true,
+        "indexed": false,
         "internalType": "uint256"
       },
       {
         "name": "encryptedOutput",
         "type": "string",
-        "indexed": true,
+        "indexed": false,
         "internalType": "string"
       },
       {
@@ -786,7 +747,7 @@
       {
         "name": "encryptedOutput",
         "type": "string",
-        "indexed": true,
+        "indexed": false,
         "internalType": "string"
       }
     ],
@@ -799,7 +760,7 @@
       {
         "name": "nullifier",
         "type": "uint256[]",
-        "indexed": true,
+        "indexed": false,
         "internalType": "uint256[]"
       }
     ],
@@ -812,7 +773,7 @@
       {
         "name": "encryptedValue",
         "type": "string",
-        "indexed": true,
+        "indexed": false,
         "internalType": "string"
       }
     ],

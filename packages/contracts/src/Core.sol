@@ -63,23 +63,21 @@ contract Core is MerkleTreeWithHistory {
         bool isSpent;
     }
 
-    uint256 public nullifiersLength;
-    uint256 public nullifierCounter;
     mapping(uint256 => bool) public nullifiers;
 
     event NewCommitment(
-        uint256 indexed commitment,
-        uint256 indexed index,
-        string indexed encryptedOutput,
+        uint256 commitment,
+        uint256 index,
+        string encryptedOutput,
         uint256 subtreeRoot,
         address sender,
         int256 depositValue
     );
-    event NewNullifier(uint256[] indexed nullifier);
-    event NewTransaction(string indexed encryptedValue);
-    event NewEncryptedOutput(string indexed encryptedOutput);
 
-    uint256 public constant MAX_EXT_AMOUNT = 10000000000;
+    event NewNullifier(uint256[] nullifier);
+    event NewTransaction(string encryptedValue);
+    event NewEncryptedOutput(string encryptedOutput);
+
     uint8 public constant MERKLE_TREE_HEIGHT = 31;
 
     IVerifier public verifier;
@@ -99,13 +97,6 @@ contract Core is MerkleTreeWithHistory {
     function calculatePublicAmount(
         int256 amountInteger
     ) public pure returns (uint256) {
-        int256 amount = amountInteger;
-        require(
-            amount > int256(MAX_EXT_AMOUNT) * -1 &&
-                amount < int256(MAX_EXT_AMOUNT),
-            "Invalid ext amount"
-        );
-
         if (amountInteger >= 0) {
             return uint256(amountInteger);
         } else {
@@ -141,8 +132,6 @@ contract Core is MerkleTreeWithHistory {
         uint256 amount,
         address tokenAddress
     ) internal {
-        require(tokenAddress != address(0), "Invalid token address");
-
         IERC20 token = IERC20(tokenAddress);
         bool success = token.transferFrom(sender, recipient, amount);
         require(success, "Token transfer failed");
@@ -154,7 +143,6 @@ contract Core is MerkleTreeWithHistory {
         uint256 amount,
         address tokenAddress
     ) internal {
-        require(tokenAddress != address(0), "Invalid token address");
         IERC20 token = IERC20(tokenAddress);
         require(
             token.transferFrom(sender, recipient, amount),
@@ -166,8 +154,8 @@ contract Core is MerkleTreeWithHistory {
         CoreProof memory proof,
         ExtData memory extData
     ) public returns (bool) {
-        // uint256 publicRoot = proof.publicValues[0];
-        // require(isKnownRoot(bytes32(publicRoot)), "Invalid public root");
+        uint256 publicRoot = proof.publicValues[0];
+        require(isKnownRoot(bytes32(publicRoot)), "Invalid public root");
 
         uint256 publicAmount = proof.publicValues[
             proof.publicValues.length - 2
@@ -222,6 +210,7 @@ contract Core is MerkleTreeWithHistory {
         ExtData memory extData
     ) public returns (bool) {
         require(verifier != IVerifier(address(0)), "Verifier address not set");
+        require(extData.tokenAddress != address(0), "Invalid token address");
 
         bool isValid = validateTransact(proof, extData);
         require(isValid, "Invalid transaction");
@@ -268,7 +257,7 @@ contract Core is MerkleTreeWithHistory {
         require(outputCommitments.length == 2, "Invalid number of outputs");
 
         string[] memory encryptedOutput = extData.encryptedCommitments;
-        // string[] memory encryptedValue = extData.encryptedReceipts;
+        string[] memory encryptedValue = extData.encryptedReceipts;
         uint256[] memory publicValues = proof.publicValues;
 
         uint256[] memory publicNullifiers = extractPublicNullifiers(
@@ -309,12 +298,12 @@ contract Core is MerkleTreeWithHistory {
             depositValue
         );
 
-        // for (uint i = 0; i < encryptedOutput.length; i++) {
-        //     emit NewEncryptedOutput(encryptedOutput[i]);
-        // }
-        // for (uint i = 0; i < encryptedValue.length; i++) {
-        //     emit NewTransaction(encryptedValue[i]);
-        // }
+        for (uint i = 0; i < encryptedOutput.length; i++) {
+            emit NewEncryptedOutput(encryptedOutput[i]);
+        }
+        for (uint i = 0; i < encryptedValue.length; i++) {
+            emit NewTransaction(encryptedValue[i]);
+        }
 
         emit NewNullifier(publicNullifiers);
     }
