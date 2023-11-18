@@ -1,0 +1,21 @@
+{
+  "routes": [
+    {
+      "src": "/(?!api/)[^.]+",
+      "dest": "/"
+    },
+    {
+      "src": "/circuit.zkey"
+    },
+    {
+      "src": "/verifier.wasm",
+      "headers": {
+        "Cache-Control": "public, max-age=300000, must-revalidate"
+      }
+    }
+  ],
+  "github": {
+    "enabled": false,
+    "silent": true
+  }
+}

@@ -1,42 +1,32 @@
 module.exports = {
-  root: true,
-
-  parserOptions: {
-    sourceType: 'module',
+  env: {
+    browser: true,
+    es2021: true,
   },
-
-  extends: ['@metamask/eslint-config'],
-
-  overrides: [
-    {
-      files: ['*.js'],
-      extends: ['@metamask/eslint-config-nodejs'],
-    },
-
-    {
-      files: ['*.ts', '*.tsx'],
-      extends: ['@metamask/eslint-config-typescript'],
-    },
-
-    {
-      files: ['*.test.ts', '*.test.js'],
-      extends: ['@metamask/eslint-config-jest'],
-      rules: {
-        '@typescript-eslint/no-shadow': [
-          'error',
-          { allow: ['describe', 'expect', 'it'] },
-        ],
-      },
-    },
+  globals: {
+    process: true,
+  },
+  extends: [
+    "eslint:recommended",
+    "plugin:react/recommended",
+    "plugin:@typescript-eslint/recommended",
   ],
-
-  ignorePatterns: [
-    '!.prettierrc.js',
-    '**/!.eslintrc.js',
-    '**/dist*/',
-    '**/*__GENERATED__*',
-    '**/build',
-    '**/public',
-    '**/.cache',
-  ],
+  parser: "@typescript-eslint/parser",
+  parserOptions: {
+    ecmaFeatures: {
+      jsx: true,
+    },
+    ecmaVersion: "latest",
+    sourceType: "module",
+  },
+  plugins: ["react", "@typescript-eslint"],
+  rules: {
+    "react/prop-types": "off",
+    "react/react-in-jsx-scope": "off",
+    "no-extra-boolean-cast": "off",
+    "@typescript-eslint/ban-ts-comment": "off",
+    "@typescript-eslint/no-non-null-assertion": "off",
+    "@typescript-eslint/no-explicit-any": "off",
+    'no-useless-escape': "off",
+  },
 };
