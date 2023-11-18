@@ -268,7 +268,7 @@ contract Core is MerkleTreeWithHistory {
         require(outputCommitments.length == 2, "Invalid number of outputs");
 
         string[] memory encryptedOutput = extData.encryptedCommitments;
-        string[] memory encryptedValue = extData.encryptedReceipts;
+        // string[] memory encryptedValue = extData.encryptedReceipts;
         uint256[] memory publicValues = proof.publicValues;
 
         uint256[] memory publicNullifiers = extractPublicNullifiers(
@@ -309,12 +309,12 @@ contract Core is MerkleTreeWithHistory {
             depositValue
         );
 
-        for (uint i = 0; i < encryptedOutput.length; i++) {
-            emit NewEncryptedOutput(encryptedOutput[i]);
-        }
-        for (uint i = 0; i < encryptedValue.length; i++) {
-            emit NewTransaction(encryptedValue[i]);
-        }
+        // for (uint i = 0; i < encryptedOutput.length; i++) {
+        //     emit NewEncryptedOutput(encryptedOutput[i]);
+        // }
+        // for (uint i = 0; i < encryptedValue.length; i++) {
+        //     emit NewTransaction(encryptedValue[i]);
+        // }
 
         emit NewNullifier(publicNullifiers);
     }
