@@ -4,7 +4,9 @@
 
 import { Button } from "@/components/button";
 import { Header } from "@/components/layout/header";
+import { computeInputs, getDepositSoluctionBatch, getRandomWallet } from "@/sdk";
 import { Transition } from "@headlessui/react";
+import { groth16 } from "snarkjs";
 
 function BackgroundIllustration() {
   return (
@@ -15,7 +17,27 @@ function BackgroundIllustration() {
 }
 
 export function Index() {
-  const handle = () => {
+  const handle = async () => {
+    const wallet = getRandomWallet()
+
+    const batch = await getDepositSoluctionBatch({
+      senderWallet: wallet,
+      totalRequired: 10,
+      selectedToken: 'erc2020',
+    });
+
+    const { inputs } = await computeInputs({
+      batch,
+      wallet,
+    });
+
+    const { proof, publicSignals } = await groth16.fullProve(
+      inputs,
+      './transaction.wasm',
+      './transaction.zkey'
+    );
+
+    console.log('proof, publicSignals', proof, publicSignals)
 
   }
   return (
