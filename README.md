@@ -1,108 +1,75 @@
-# Opact Tickets
+# Compliant Privacy
 
-Opact Tickets is a compliant anonymous transactions tool, that utilizes ZK (Zero-knowledge proof) technology.
+## Introduction
 
-The main feature is allowing the mixing of transactions using NEAR or any NEP-141 token only for well inteded users. The system integrates with data providors to block wallets suspicious of money laundering and smart contract hacking.
+### The Problem
 
-This works by leveaging [hapi.one protocol] as a data partner which is responsible for allowlisting and denylisting accounts.
+This project aims to implement the concept of subset inclusion proofs for anonymity protocols as described by [Privacy Pools](https://www.privacypools.com/) and by Buterin et al in the article [Blockchain Privacy and Regulatory Compliance: Towards a Practical Equilibrium](https://papers.ssrn.com/sol3/papers.cfm?abstract_id=4563364).
 
-## How mixing works
+The original implementation of Privacy Pools describes a protocol similar to the original [Tornado Cash solution](https://github.com/tornadocash/tornado-core), which allows users to (1) generate a secret value locally, (2) deposit a fixed amount of Ether to a smart contract with a commitment to the secret value (its poseidon hash) and (3) at any later time, by presenting a Zero Knowledge proof of knowledge of one of the secret values committed to the contract, withdraw the deposited amount from the smart contract.
+This setup breaks the link between deposit and withdrawal on chain as it is impossible to deduce the secret value from the commitment and the proof. Tornado Cash was famously [sanctioned by the OFAC in 2022](https://www.coindesk.com/policy/2023/10/11/tornado-cash-trading-volumes-nosedived-90-after-us-sanctions/#:~:text=The%20U.S.%20Treasury%20Department's%20Office,malicious%20actors%20to%20launder%20money.) leading to criminal cases against the developers and the users of the protocol.
 
-TBD
 
-## Compliance scheme
+Privacy pools improves on that design by allowing **subset** membership proofs. These allow a user to prove that they know the preimage of a previous unused commitment while also proving that this preimage belongs to a specific subset of all preimages. By leveraging the subset proofs, user can effectively prove that their withdraws did not come from any known money laundry or other illicit source. 
 
-The compliance scheme works with wallet risk scores.
+While the tool created by privacy pools is very useful, it still leaves a lot of unanswered questions which have been explored more in depth by Buterin et al. in their aforementioned article. The main issue is **who** should determine which deposits into the protocol are to be considered malicious and excluded from subset proofs by all users - it is easy to fall into a centralized and permissioned solution when considering the problem which must be avoid at all costs to maintain the censorship resistance property of blockchain systems.
 
-When a user first deposits to HYC they have to call the `allowlist` method, which queries hapi.one to check for risk score. If it is above the threshold the user is automatically blocked from depositing. This means that the protocol has already identified the user as being in connection with criminal activities.
+Moreover, the current design of Privacy Pools draws from an early version of Tornado Cash that only allowed fixed sized deposits and withdrawals of fixed asset types. The UX provided by the protocol is not ideal to the everyday user and is a barrier to adoption of privacy solutions. Other protocols have been proposed to address that problem - albeit without considerations for regulatory compliance - such as [Tornado Cash Nova](https://github.com/tornadocash/tornado-nova) and [Railgun](https://www.railgun.org/).
 
-However, it is always possible that a user performs a hack / scam / is laudering money and has not yet been flagged by hapi.one. In this cases the user will be able to deposit funds without issue.
+### Our Solution
 
-Here it is necessary to leverage the most innovative technology of the protocol. For mixed transactions to become untraceable, it is necessary that the user waits a determined amount of time (actually wait for a high number of other users to deposit and withdraw) before withdrawing the funds to a new wallet. The bigger the volume being moved, the more time the user has to wait.
+We propose a solution that combines the best of both worlds: a decentralized and permissionless protocol that allows for subset inclusion proofs and that is also flexible enough to allow for variable sized deposits and withdrawals of any asset type. 
 
-We implemented a method called `denylist`, which can be called by anyone to perform a new security score check on any existing account. If the score of the account is found to be above the threshold, any funds that have been deposited by that account cannot be withdrawn anymore.
+We also propose a solution to the problem of malicious deposit detection by building a decoupled analysis role in the system. This role can be filled by any generic provider that is capable of detecting malicious transactions. For the Hackathon we implemented a simple analysis agent that uses the [VaaS API](https://www.vaas.live/) to detect malicious transactions. VaaS is a company that provides risk analysis for crypto transactions in a similar manner to [Chainalysis](https://www.chainalysis.com/) and [Elyptic](https://www.elliptic.co/).
 
-This means that, even if a malicious user is fast enough to deposit the tokens to HYC before being flagged, while the tokens are being mixed in the protocol, the malicious user runs the risk of being denylisted and losing access to all funds. Essentially a malicious user would have 3 choices:
-1. Deposit the funds before being flagged and withdraw really quickly, to avoid getting denylisted -> in this case the anonymity provided by HYC is not enough to stop fund tracking agencies from tracing the token flow;
-2. Deposit the funds before being flagged and wait the appropriate time to withdraw -> in this case, the user can be flagged at any moment by automated or human agents and lose all the funds;
-3. Not using HYC -> since case (1) does not provide benefits to the malicious user and case (2) is high risk, game theoretical equilibrium is for malicious user to avoid HYC
+The agent posts an on chain list of malicious transactions that every withdrawal must dissociate from in order to be considered licit.
 
-## Tech
+**It's important to notice that all considerations regarding maliciousness of transactions and withdrawals are performed by off chain agents that are NOT linked to the core protocol. The protocol is never going to lock funds based on an agent flagging it as possibly malicious - however centralized entities are going to chose not to interact with those funds based on their bad risk score**
 
-### Installation
+## Architecture
 
-Opact Tickets requires [Node.js], [yarn], [rust], [circom] and the rust wasm toolchain. It is recommended that you follow [near sdk tutorial] to install rust and wasm.
+The protocol consists of 3 parts:
+1. Core singleton smart contract
+2. Anti Money Laundry Agents
+3. Frontend interface
 
-After installing all the tools, you can run the command:
+### Core Singleton Smart Contract
 
-```sh
-yarn
-```
-And install all the dependencies
-
-### Circuits
-
-To be able to reproduce tests, deployment and frontend, it is necessary to first compile all zero-knowledge circuits using:
-```sh
-yarn circuits circuit:setup:plonk
-```
-
-### Smart Contracts
-
-**Build**
-
-To build the contracts run:
-```sh
-yarn contracts build:contract
+The core singleton smart contract is the only on chain component of the protocol. It works with an UTXO model.
+Whenever a user wants to deposit funds within the protocol they must generate an UTXO representing the funds that they're depositing in the following format:
+```json
+{
+    "assetType": "<encoded ERC + specs>",
+    "assetQuantity": "<amount of the asset being deposited>",
+    "owner": "<public key of owner>",
+    "blindingFactor": "<strongly random number>"
+}
 ```
 
-To run tests on smart contracts run:
-```sh
-yarn contracts test:rust
-yarn contracts test:lib
-```
+However, this plain text UTXO is never going to be submitted on chain. The user must create 2 private versions of it: (1) a poseidon hash commitment of the UTXO (2) an encrypted version of the UTXO using its owner's public key and an asymmetric encryption scheme.
 
-To deploy sample testnet app run:
-```sh
-yarn seed:testnet
-```
+When the user deposits their assets, the commitment to the UTXO is stored within a merkle tree in the contract and the encrypted version is logged as an event in the blockchain.
 
-This will print all relevant addresses generated so that you can set them as environment variables for other apps.
+To spend each UTXO, the user must provide a zk proof that:
+(1) they know the preimage to the commitment (that requires that they know the private key that can decrypted the commitment)
+(2) they know the private key to the public key used in the owner field of the UTXO
 
-### Subgraph
+Additionally, whenever a user does a transaction they can spend multiple UTXO and create new UTXOs - the prove must assert that the quantity of created assets is equal to the quantity of spent assets.
 
-Subgraph is an indexer using The Graph technology to allow queries on HYC's historical data.
+The user also creates an inclusion proof in which they can explicitly exclude known maliciou UTXOs, proving that they did NOT spend those in the transaction.
 
-To setup, you must edit `packages/subgraph/subgraph.yaml` to include the addresses to all HYC core contracts and set the network version (mainnet or testnet).
+**more considerations regarding the circuits and contracts are given in the contract and circuits packages' readme.md files**
 
-After that you can deploy the subgraph to The Graph's hosted service using [this tutorial](https://thegraph.com/docs/en/deploying/deploying-a-subgraph-to-hosted/).
+### Anti Money Laundry (AML) agents
 
-The graphql link generated for the subgraph must them be set as an environment variable for both frotend and relayer.
+The Anti Money Laundry Agent is an off chain bot that uses a risk scoring API to evaluate all deposits to the protocol. Whenever it finds that a deposit's risk score is too high, it adds the deposit's UTXO to a list of malicious UTXOs that is stored in an on chain contract.
 
-### Relayer
+Users that wish to prove to that Anti Money Landry Agent that they are not malicious must always exclude all the UTXOs in the agent's list from their inclusion proofs. If they do not exclude all the UTXOs in the list, the agent will flag their transaction as malicious and the user will not be able to interact with off chain agents that use the Anti Money Laundry Agent as their compliance threshold.
 
-TBD
+**more considerations regarding the AML agent are given in the agent package's readme.md file**
 
-### Front
+### Metamask Snap frontend
 
-To run frontend locally, simply set environment variables described in `packages/front` and run:
-```sh
-yarn front dev
-```
+The frontend is a metamask snap that allows users to deposit and withdraw funds from the protocol. It can be used as a model that integrates with any Anti Money Laundry Agent. The snap fetches the denylist from the AML agent and uses that as a base for their subset proofs.
 
-## CI
-CI is set to perform all tests and deploy frontend to vercel. Sample deployments are done on PRs and production deployments are done on merges to main.
-
-To change environment variables used in CI deployments alter the following files:
-PRs: `.github/workflows/CI.yml`
-production: `.github/workflows/vercel_deploy.yml`
-
-   [near sdk tutorial]: <https://docs.near.org/sdk/rust/introduction>
-   [rust]: <https://rustup.rs/>
-   [Node.js]: <https://nodejs.org/en/>
-   [yarn]: <https://yarnpkg.com/>
-   [circom]: <https://docs.circom.io/getting-started/installation/>
-   [hapi.one protocol]: <https://hapi.one/>
-
-
-
+**more considerations regarding the snap frontend are given in the site and snap packages' readme.md files**
