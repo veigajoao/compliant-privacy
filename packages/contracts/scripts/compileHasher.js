@@ -1,7 +1,7 @@
 // Generates Hasher artifact at compile-time using external compilermechanism
 const path = require("path");
 const fs = require("fs");
-const genContract = require("../../../node_modules/circomlib/src/poseidon_gencontract.js");
+const genContract = require("circomlibjs/src/poseidon_gencontract.js");
 const outputPath = __dirname;
 const outputFile = path.join(outputPath, "Hasher.json");
 

@@ -1,19 +1,11 @@
-const { ethers } = require("hardhat");
-const { utils } = ethers;
+import { ContractFactory } from 'ethers';
+import Hasher from './Hasher.json' assert { type: "json" };
 
-// This is a Hardhat script, to be run with `npx hardhat run <path>`.
-async function main() {
-  require("./compileHasher");
 
-  const Hasher = await await ethers.getContractFactory("Hasher");
-  const hasher = await Hasher.deploy();
-  await hasher.deployed();
-  console.log(`hasher: ${hasher.address}`);
-}
+const factory = new ContractFactory(Hasher.abi, Hasher.bytecode);
 
-main()
-  .then(() => process.exit(0))
-  .catch((error) => {
-    console.error(error);
-    process.exit(1);
-  });
+// If your contract requires constructor args, you can specify them here
+const contract = await factory.deploy();
+
+console.log(contract.address);
+console.log(contract.deployTransaction);
