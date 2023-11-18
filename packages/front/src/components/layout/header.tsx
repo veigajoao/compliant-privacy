@@ -9,37 +9,6 @@ export function Header() {
       <nav
         className="w-full absolute"
       >
-        <div
-          className="bg-[#060A0F] h-[44px] w-full flex items-center justify-center border-b-[2px] border-[#606466] py-[8px]"
-        >
-          <div className="flex">
-            <ExclamationTriangleIcon className="w-[18px] text-[#919699]" />
-
-            <p className="hidden lg:block text-[#919699] text-[16px] text-center font-[600] ml-[8px]">
-              This app is in beta. It has not been audited.
-            </p>
-
-            <p className="lg:hidden text-bold text-[#919699] text-center ml-[8px]">
-              App in beta version. Audit in progress.
-            </p>
-
-            <a
-              href="https://docs.hideyour.cash/general-information/alpha-version"
-              target={`_blank`}
-              className="flex group text-bold text-white text-center cursor-pointer text-[14px] leading-[21px] space-x-[8px] ml-[16px]"
-            >
-              <span>
-                Learn more
-              </span>
-
-
-              <Arrow
-                className="w-[18px] group-hover:rotate-[45deg] transition-all"
-              />
-            </a>
-          </div>
-        </div>
-
         <Container
           className="
             px-[16px]
