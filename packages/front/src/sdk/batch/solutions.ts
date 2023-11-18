@@ -109,22 +109,6 @@ export const findSubsetsWithSum = (arr: any, target: bigint): any => {
   return result;
 };
 
-export const getSolutionBatchForNFT = async ({ pubkey, treeBalance }: any) => {
-  const nft = treeBalance.utxos.find(
-    (utxo: any) => utxo.token === treeBalance.token,
-  );
-
-  if (!nft) {
-    throw new Error('No NFT found');
-  }
-
-  return [
-    nft,
-    getUtxo({ token: treeBalance.token, pubkey }),
-    getUtxo({ token: treeBalance.token, pubkey }),
-  ];
-};
-
 export const getSolutionBatch = async ({
   pubkey,
   treeBalance,

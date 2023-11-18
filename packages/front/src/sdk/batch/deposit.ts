@@ -9,7 +9,6 @@ export const getDepositSoluctionBatch = async ({
   senderWallet,
   totalRequired,
   selectedToken,
-  receiverPubkey,
 }: any) => {
   const derivedKeys = deriveBabyJubKeysFromEth(senderWallet)
 
@@ -18,24 +17,24 @@ export const getDepositSoluctionBatch = async ({
   const utxosIn =  [
     getUtxo({
       token,
+      id: 0,
       amount: 0n,
-      id: selectedToken.id,
       pubkey: derivedKeys.pubkey,
-      address: selectedToken.refName,
+      address: selectedToken,
     }),
     getUtxo({
       token,
+      id: 0,
       amount: 0n,
-      id: selectedToken.id,
       pubkey: derivedKeys.pubkey,
-      address: selectedToken.refName,
+      address: selectedToken,
     }),
     getUtxo({
       token,
+      id: 0,
       amount: 0n,
-      id: selectedToken.id,
       pubkey: derivedKeys.pubkey,
-      address: selectedToken.refName,
+      address: selectedToken,
     }),
   ]
 
@@ -47,7 +46,7 @@ export const getDepositSoluctionBatch = async ({
     },
     totalRequired,
     selectedToken,
-    senderPubkey: receiverPubkey || senderWallet.pubkey,
+    senderPubkey: derivedKeys.pubkey,
     isDeposit: true,
   })
 

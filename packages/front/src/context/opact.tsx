@@ -1,13 +1,20 @@
-import { computeInputs, getDepositSoluctionBatch, getRandomWallet, getWalletFromMnemonic } from '@/sdk';
+import { computeInputs, decrypt, encrypt, getDepositSoluctionBatch, getRandomWallet, getTransferSolutionBatch, getWalletFromMnemonic } from '@/sdk';
 import { walletStorage } from '@/utils';
 import React, { createContext, useReducer, useContext, useState, useEffect } from 'react';
 import {
   buildProof,
 } from '@/utils/proof'
 import { loadArtifact } from '@/utils/artifacts';
+import { computeData } from '@/utils/data';
+import contractABI from '../contractAbi.json'
+import { ethers } from 'ethers';
+
+const contractAddress = '0x7E8C10a65e54c552557CcF59Ca5DaBE85180cB7C'
+const tokenAddress = '0xcf185f2F3Fe19D82bFdcee59E3330FD7ba5f27ce'
 
 const initialState = {
   wallet: null,
+  treeBalances: null,
   loadingDeposit: false,
   loadingWithdraw: false,
 };
@@ -17,6 +24,7 @@ const OpactContext = createContext<any>({
   createRandomWallet: () => {},
   disconnect: () => {},
   sendDeposit: () => {},
+  sendWithdraw: () => {},
 });
 
 const reducer = (state: any, updated: any ) => {
@@ -32,6 +40,20 @@ const reducer = (state: any, updated: any ) => {
       return {
         ...state,
         loadingDeposit: updated.payload
+      }
+    }
+
+    case 'setLoadingWithdraw': {
+      return {
+        ...state,
+        loadingWithdraw: updated.payload
+      }
+    }
+
+    case 'setTreeBalances': {
+      return {
+        ...state,
+        treeBalances: updated.payload
       }
     }
   }
@@ -80,13 +102,24 @@ const OpactContextProvider = ({ children }: any) => {
         type: 'setWallet',
         payload: wallet,
       })
+
+      const treeBalances = await computeData({
+        secret: wallet.pvtkey,
+        currentId: 0,
+        storedUtxos: [],
+      })
+
+      dispatch({
+        type: 'setTreeBalances',
+        payload: treeBalances,
+      })
     })()
   }, [])
 
   const sendDeposit = async ({
-    amount,
+    amount = 1,
   }) => {
-    if (global.loadingDeposit || !global.wallet) {
+    if (global.loadingDeposit || !global.wallet || !window?.ethereum) {
       return
     }
 
@@ -99,8 +132,8 @@ const OpactContextProvider = ({ children }: any) => {
 
     const batch = await getDepositSoluctionBatch({
       senderWallet: wallet,
-      totalRequired: 10,
-      selectedToken: 'erc2020',
+      totalRequired: amount,
+      selectedToken: tokenAddress,
     });
 
     const { inputs } = await computeInputs({
@@ -112,29 +145,103 @@ const OpactContextProvider = ({ children }: any) => {
       inputs,
     })
 
+    const encryptedCommitments = batch.utxosOut.map((utxo: any) => encrypt({
+      data: utxo,
+      address: wallet.address
+    }))
+
+    const outputCommitments = batch.utxosOut.map((utxo: any) => utxo.hash.toString())
+
+    const account = (await window.ethereum.request({ method: 'eth_requestAccounts' }))[0];
+
+    const provider = new ethers.providers.Web3Provider(window.ethereum);
+
+    const signer = provider.getSigner();
+
+    const contract = new ethers.Contract(
+      contractAddress,
+      contractABI,
+      signer,
+    );
+
+    const tx = contract.transact(
+      publicArgs,
+      {
+        tokenAddress,
+        outputCommitments,
+        recipient: account,
+        tokenAmount: amount,
+        encryptedCommitments,
+        encryptedReceipts: [],
+      },
+    )
+
     dispatch({
       type: 'setLoadingDeposit',
       payload: false,
     })
+  }
 
-    if (!window?.ethereum) {
+  const sendWithdraw = async ({
+    treeBalance,
+  }) => {
+    if (global.loadingDeposit || !global.wallet || !window?.ethereum) {
       return
     }
 
+    dispatch({
+      type: 'setLoadingWithdraw',
+      payload: true,
+    })
+
+    const { wallet } = global
+
+    const batch = await getTransferSolutionBatch({
+      treeBalance,
+      selectedToken: 'erc2020',
+      senderWallet: wallet,
+      totalRequired: 10
+    })
+
+    const { inputs } = await computeInputs({
+      batch,
+      wallet,
+    });
+
+    const publicArgs = await buildProof({
+      inputs,
+    })
+
+    const encryptedCommitments = batch.utxosOut.map((utxo: any) => encrypt({
+      data: utxo,
+      address: wallet.address
+    }))
+
     const account = (await window.ethereum.request({ method: 'eth_requestAccounts' }))[0];
 
-    console.log('publicArgs', publicArgs)
     console.log('window.eth', account)
+    console.log('publicArgs', publicArgs)
+    console.log('encryptedCommitments', encryptedCommitments)
+    console.log('decrypted', encryptedCommitments.map((i: string) => decrypt({
+      encrypted: i,
+      privateKey: wallet.pvtkey
+    })))
+
+    dispatch({
+      type: 'setLoadingWithdraw',
+      payload: false,
+    })
   }
 
   return (
     <OpactContext.Provider
       value={{
         global,
-        dispatchState,
-        createRandomWallet,
         disconnect,
         sendDeposit,
+        sendWithdraw,
+        dispatchState,
+        createRandomWallet,
       }}
     >
       {children}

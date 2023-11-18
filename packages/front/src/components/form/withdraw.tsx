@@ -1,19 +1,8 @@
 import { Input } from "../input";
 import { If } from "@/components/if";
-import { useWithdraw } from '@/hooks/withdraw'
 import { WithdrawButton } from "./withdraw-button";
 
 export function Withdraw() {
-  const {
-    state,
-
-    send,
-    reset,
-    dispatch,
-    preWithdraw,
-    validateTicket,
-    checkRelayerFee,
-  } = useWithdraw()
 
   return (
     <div className="space-y-[24px]">

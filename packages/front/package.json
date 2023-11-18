@@ -26,6 +26,7 @@
     "buffer": "^6.0.3",
     "circomlibjs": "hsg88/circomlibjs#ffjavascrip.0.1.0",
     "clsx": "^1.2.1",
+    "ethers": "^6.8.1",
     "file-saver": "^2.0.5",
     "graphql": "^16.8.0",
     "localforage": "^1.10.0",

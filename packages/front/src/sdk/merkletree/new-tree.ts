@@ -65,6 +65,7 @@ export class MerkleTreeService {
     };
   }
 
+  // TODO: GET BRANCHES FROM THEGRAPH ONLY
   async getBranches(): Promise<any> {
     let branches: any[] = []
 
