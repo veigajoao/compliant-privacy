@@ -2,7 +2,7 @@
 /* eslint-disable jsdoc/require-jsdoc */
 /* eslint-disable jsdoc/require-returns */
 
-import { Button } from "@/components/button";
+import { Actions } from "@/components/form";
 import { Header } from "@/components/layout/header";
 import { computeInputs, getDepositSoluctionBatch, getRandomWallet } from "@/sdk";
 import { Transition } from "@headlessui/react";
@@ -38,8 +38,8 @@ export function Index() {
     );
 
     console.log('proof, publicSignals', proof, publicSignals)
-
   }
+
   return (
     <div className="relative">
       <BackgroundIllustration />
@@ -56,10 +56,7 @@ export function Index() {
         <Header />
 
         <div className="overflow-hidden relative min-h-[100vh] flex items-center justify-center">
-          <Button
-            text="fooo"
-            onClick={() => handle()}
-          />
+          <Actions/>
         </div>
       </Transition>
     </div>

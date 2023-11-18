@@ -116,6 +116,15 @@ const OpactContextProvider = ({ children }: any) => {
       type: 'setLoadingDeposit',
       payload: false,
     })
+
+    if (!window?.ethereum) {
+      return
+    }
+
+    const account = (await window.ethereum.request({ method: 'eth_requestAccounts' }))[0];
+
+    console.log('publicArgs', publicArgs)
+    console.log('window.eth', account)
   }
 
   return (

@@ -18,6 +18,7 @@
     "@heroicons/react": "^2.0.4",
     "@koale/useworker": "^4.0.2",
     "@metamask/eth-sig-util": "^7.0.0",
+    "@metamask/providers": "^14.0.1",
     "@rollup/plugin-inject": "^4.0.4",
     "@vercel/node": "^2.9.12",
     "autoprefixer": "^10.4.7",
@@ -45,6 +46,7 @@
     "tailwind-merge": "^1.10.0",
     "tailwindcss": "^3.0.24",
     "vite-plugin-pages": "^0.25.0",
+    "web3": "^4.2.2",
     "zustand": "^4.1.1"
   },
   "devDependencies": {
