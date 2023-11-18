@@ -5,7 +5,8 @@
   "private": true,
   "scripts": {
     "postinstall": "yarn husky install",
-    "front": "yarn workspace front"
+    "front": "yarn workspace front",
+    "agents": "yarn workspace agents"
   },
   "engines": {
     "yarn": ">=1.22.0 <2.0.0",
