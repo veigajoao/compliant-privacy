@@ -3,11 +3,7 @@ import { Container } from "../container";
 import { useOpactContext } from "@/context/opact";
 
 export function Header() {
-  const {
-    global,
-    disconnect,
-    createRandomWallet,
-  } = useOpactContext()
+  const { global, disconnect, createRandomWallet } = useOpactContext();
 
   const shortenAddress = (address: string, chars = 8): string => {
     if (!address) {
@@ -17,12 +13,9 @@ export function Header() {
     return `${address.slice(0, chars)}...${address.slice(-chars)}`;
   };
 
-
   return (
     <header className="relative z-50">
-      <nav
-        className="w-full absolute"
-      >
+      <nav className="w-full absolute">
         <Container
           className="
             px-[16px]
@@ -43,34 +36,28 @@ export function Header() {
         >
           <div className="relative z-10 flex items-center gap-16">
             <a href="/" aria-label="Home">
-              <img
-                className="h-[32px] w-auto"
-                src="./logo.png"
-              />
+              <img className="h-[32px] w-auto" src="./logo.png" />
             </a>
           </div>
 
           <div className="flex items-center gap-6">
-            {global.wallet
-              ? (
-                <ButtonSecondary
-                  withIcon={true}
-                  disabled={false}
-                  isLoading={false}
-                  onClick={() => disconnect()}
-                  text={shortenAddress(global.wallet.pubkey)}
-                />
-              )
-              : (
-                <ButtonSecondary
-                  withIcon={true}
-                  disabled={false}
-                  isLoading={false}
-                  onClick={() => createRandomWallet()}
-                  text="Generate Random Wallet"
-                />
-              )
-            }
+            {global.wallet ? (
+              <ButtonSecondary
+                withIcon={true}
+                disabled={false}
+                isLoading={false}
+                onClick={() => disconnect()}
+                text={shortenAddress(global.wallet.pubkey)}
+              />
+            ) : (
+              <ButtonSecondary
+                withIcon={true}
+                disabled={false}
+                isLoading={false}
+                onClick={() => createRandomWallet()}
+                text="Generate Random Wallet"
+              />
+            )}
           </div>
         </Container>
       </nav>

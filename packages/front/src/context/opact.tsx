@@ -1,16 +1,37 @@
-import { computeInputs, decrypt, encrypt, formatInteger, getDepositSoluctionBatch, getRandomWallet, getTransferSolutionBatch, getWalletFromMnemonic } from '@/sdk';
-import { walletStorage } from '@/utils';
-import React, { createContext, useReducer, useContext, useEffect } from 'react';
 import {
-  buildProof,
-} from '@/utils/proof'
-import { loadArtifact } from '@/utils/artifacts';
-import { computeData } from '@/utils/data';
-import contractABI from '../contractAbi.json'
+  computeInputs,
+  decrypt,
+  encrypt,
+  formatInteger,
+  getDepositSoluctionBatch,
+  getRandomWallet,
+  getTransferSolutionBatch,
+  getWalletFromMnemonic,
+} from "@/sdk";
+import { walletStorage } from "@/utils";
+import React, {
+  createContext,
+  useReducer,
+  useContext,
+  useState,
+  useEffect,
+} from "react";
+import { buildProof } from "@/utils/proof";
+import { loadArtifact } from "@/utils/artifacts";
+import { computeData } from "@/utils/data";
+import contractABI from "../contractAbi.json";
 import { ethers } from "ethers";
-import tokenABI from '../tokenABI.json'
-import { createPublicClient, http } from 'viem'
-import { sepolia } from 'viem/chains'
+import tokenABI from "../tokenABI.json";
+import { createPublicClient, http } from "viem";
+import { sepolia } from "viem/chains";
+import { WalletConnectModal } from "@walletconnect/modal";
+
+export const availableTokens = [
+  {
+    contractAddress: "0xD2756f78c72ad740BB8f82dD97F0CBa01E6e5337",
+    tokenAddress: "0xcf185f2F3Fe19D82bFdcee59E3330FD7ba5f27ce",
+  },
+];
 
 export const publicClient = createPublicClient({
   chain: sepolia,
@@ -25,9 +46,11 @@ const initialState = {
   treeBalances: null,
   loadingDeposit: false,
   loadingWithdraw: false,
+  selectedToken: availableTokens[0],
 };
 
 const OpactContext = createContext<any>({
+  walletConnectModal: null,
   global: { ...initialState },
   createRandomWallet: () => {},
   disconnect: () => {},
@@ -35,99 +58,122 @@ const OpactContext = createContext<any>({
   sendWithdraw: () => {},
 });
 
-const reducer = (state: any, updated: any ) => {
+const reducer = (state: any, updated: any) => {
   switch (updated.type) {
-    case 'setWallet': {
+    case "setWallet": {
       return {
         ...state,
-        wallet: updated.payload
-      }
+        wallet: updated.payload,
+      };
     }
 
-    case 'setLoadingDeposit': {
+    case "setLoadingDeposit": {
       return {
         ...state,
-        loadingDeposit: updated.payload
-      }
+        loadingDeposit: updated.payload,
+      };
     }
 
-    case 'setLoadingWithdraw': {
+    case "setLoadingWithdraw": {
       return {
         ...state,
-        loadingWithdraw: updated.payload
-      }
+        loadingWithdraw: updated.payload,
+      };
     }
 
-    case 'setTreeBalances': {
+    case "setTreeBalances": {
       return {
         ...state,
-        treeBalances: updated.payload
-      }
+        treeBalances: updated.payload,
+      };
+    }
+
+    case "setSelectedToken": {
+      return {
+        ...state,
+        selectedToken: updated.payload,
+      };
     }
   }
 
-  return state
-}
+  return state;
+};
 
 const OpactContextProvider = ({ children }: any) => {
   const [global, dispatch] = useReducer(reducer, initialState);
 
-  const dispatchState = (value: any) => dispatch(value)
+  const dispatchState = (value: any) => dispatch(value);
 
   const createRandomWallet = async () => {
-    const wallet = getRandomWallet()
+    const wallet = getRandomWallet();
 
-    await walletStorage.store(wallet.mnemonic)
+    await walletStorage.store(wallet.mnemonic);
 
     dispatch({
-      type: 'setWallet',
+      type: "setWallet",
       payload: wallet,
-    })
-  }
+    });
+  };
 
   const disconnect = async () => {
     dispatch({
-      type: 'setWallet',
+      type: "setWallet",
       payload: null,
-    })
+    });
 
-    await walletStorage.store('')
-  }
+    await walletStorage.store("");
+  };
+
+  const walletConnectModal = new WalletConnectModal({
+    projectId: import.meta.env.VITE_WALLET_CONNECT_PROJECT_ID,
+    chains: ["eip155:1"],
+  });
+
+  const selectToken = (token) => {
+    dispatch({
+      type: "setSelectedToken",
+      payload: availableTokens.find((t) => t.tokenAddress === token),
+    });
+  };
 
   useEffect(() => {
     (async () => {
-      await loadArtifact()
+      await loadArtifact();
 
-      const cached = await walletStorage.get()
+      const cached = await walletStorage.get();
 
       if (!cached) {
-        return
+        return;
       }
 
-      const wallet = getWalletFromMnemonic(cached as string)
+      const wallet = getWalletFromMnemonic(cached as string);
 
       dispatch({
-        type: 'setWallet',
+        type: "setWallet",
         payload: wallet,
-      })
+      });
 
       const encryptedEvents = await publicClient.getContractEvents({
-        address: contractAddress,
+        address: global.selectedToken.contractAddress,
         abi: contractABI,
-        eventName: 'NewEncryptedOutput',
+        eventName: "NewEncryptedOutput",
         fromBlock: 4720739n,
-      })
+      });
 
-      const encryptedCommitments = encryptedEvents.map(({ args }: any) => args.encryptedOutput)
+      const encryptedCommitments = encryptedEvents.map(
+        ({ args }: any) => args.encryptedOutput
+      );
 
       const nullifiersEvent = await publicClient.getContractEvents({
-        address: contractAddress,
+        address: global.selectedToken.contractAddress,
         abi: contractABI,
-        eventName: 'NewNullifier',
+        eventName: "NewNullifier",
         fromBlock: 4720739n,
-      })
+      });
 
-      const nullifiers = nullifiersEvent.map(({ args }: any) => args.nullifier).flat(1)
+      const nullifiers = nullifiersEvent
+        .map(({ args }: any) => args.nullifier)
+        .flat(1);
 
       const treeBalances = await computeData({
         storedUtxos: [],
@@ -135,28 +181,28 @@ const OpactContextProvider = ({ children }: any) => {
         nullifiers,
         encryptedCommitments,
         secret: wallet.pvtkey,
-      })
+      });
 
-      console.log('treeBalances', treeBalances)
+      console.log("treeBalances", treeBalances);
 
       dispatch({
-        type: 'setTreeBalances',
+        type: "setTreeBalances",
         payload: treeBalances,
-      })
-    })()
-  }, [])
+      });
+    })();
+  }, []);
 
   const sendDeposit = async (rawAmount: string) => {
     if (global.loadingDeposit || !global.wallet || !window?.ethereum) {
-      return
+      return;
     }
 
     dispatch({
-      type: 'setLoadingDeposit',
+      type: "setLoadingDeposit",
       payload: true,
-    })
+    });
 
-    const { wallet } = global
+    const { wallet } = global;
 
     const commitmentsEvent = await publicClient.getContractEvents({
       address: contractAddress,
@@ -173,7 +219,7 @@ const OpactContextProvider = ({ children }: any) => {
       commitments,
       senderWallet: wallet,
       totalRequired: rawAmount,
-      selectedToken: tokenAddress,
+      selectedToken: global.selectedToken.tokenAddress,
     });
 
     const { inputs } = await computeInputs({
@@ -183,43 +229,45 @@ const OpactContextProvider = ({ children }: any) => {
 
     const publicArgs = await buildProof({
       inputs,
-    })
+    });
 
-    const encryptedCommitments = batch.utxosOut.map((utxo: any) => encrypt({
-      data: utxo,
-      address: wallet.address
-    }))
+    const encryptedCommitments = batch.utxosOut.map((utxo: any) =>
+      encrypt({
+        data: utxo,
+        address: wallet.address,
+      })
+    );
 
-    const outputCommitments = batch.utxosOut.map((utxo: any) => utxo.hash.toString())
+    const outputCommitments = batch.utxosOut.map((utxo: any) =>
+      utxo.hash.toString()
+    );
 
-    const account = (await window.ethereum.request({ method: 'eth_requestAccounts' }))[0];
+    const account = (
+      await window.ethereum.request({ method: "eth_requestAccounts" })
+    )[0];
 
-    const provider = new ethers.BrowserProvider(window.ethereum)
+    const provider = new ethers.BrowserProvider(window.ethereum);
 
     const signer = await provider.getSigner();
 
     const contractToken = new ethers.Contract(
-      tokenAddress,
+      global.selectedToken.tokenAddress,
       tokenABI,
-      signer,
-    )
-
-    const amount = formatInteger(rawAmount, 18)
-
-    await contractToken.approve(contractAddress, amount)
-
-    const contract = new ethers.Contract(
-      contractAddress,
-      contractABI,
-      signer,
+      signer
     );
 
-    const [
-      a,
-      b,
-      c,
-      public_values
-    ] = JSON.parse(`[${publicArgs}]`)
+    const amount = formatInteger(rawAmount, 18);
+
+
+    await contractToken.approve(global.selectedToken.contractAddress, amount);
+
+    const contract = new ethers.Contract(
+      global.selectedToken.contractAddress,
+      contractABI,
+      signer
+    );
+
+    const [a, b, c, public_values] = JSON.parse(`[${publicArgs}]`);
 
     try {
       const tx = await contract.transact(
@@ -232,7 +280,7 @@ const OpactContextProvider = ({ children }: any) => {
         [
           account,
           amount,
-          tokenAddress,
+          global.selectedToken.tokenAddress,
           [],
           encryptedCommitments,
           outputCommitments,
@@ -241,28 +289,28 @@ const OpactContextProvider = ({ children }: any) => {
 
       console.log('tx', tx)
     } catch (e) {
-      console.warn(e)
+      console.warn(e);
     } finally {
       dispatch({
-        type: 'setLoadingDeposit',
+        type: "setLoadingDeposit",
         payload: false,
-      })
+      });
     }
-  }
+  };
 
   const sendWithdraw = async (amount = 1) => {
     if (global.loadingDeposit || !global.wallet || !window?.ethereum) {
-      return
+      return;
     }
 
     dispatch({
-      type: 'setLoadingWithdraw',
+      type: "setLoadingWithdraw",
       payload: true,
-    })
+    });
 
-    const { wallet, treeBalances } = global
+    const { wallet, treeBalances } = global;
 
-    const treeBalance = treeBalances[tokenAddress]
+    const treeBalance = treeBalances[global.selectedToken.tokenAddress];
 
     const commitmentsEvent = await publicClient.getContractEvents({
       address: contractAddress,
@@ -280,10 +328,10 @@ const OpactContextProvider = ({ children }: any) => {
     const batch = await getTransferSolutionBatch({
       treeBalance,
       commitments,
-      selectedToken: tokenAddress,
+      selectedToken: global.selectedToken.tokenAddress,
       senderWallet: wallet,
-      totalRequired: amount
-    })
+      totalRequired: amount,
+    });
 
     const { inputs } = await computeInputs({
       batch,
@@ -292,33 +340,34 @@ const OpactContextProvider = ({ children }: any) => {
 
     const publicArgs = await buildProof({
       inputs,
-    })
+    });
 
-    const encryptedCommitments = batch.utxosOut.map((utxo: any) => encrypt({
-      data: utxo,
-      address: wallet.address
-    }))
+    const encryptedCommitments = batch.utxosOut.map((utxo: any) =>
+      encrypt({
+        data: utxo,
+        address: wallet.address,
+      })
+    );
 
-    const outputCommitments = batch.utxosOut.map((utxo: any) => utxo.hash.toString())
+    const outputCommitments = batch.utxosOut.map((utxo: any) =>
+      utxo.hash.toString()
+    );
 
-    const account = (await window.ethereum.request({ method: 'eth_requestAccounts' }))[0];
+    const account = (
+      await window.ethereum.request({ method: "eth_requestAccounts" })
+    )[0];
 
-    const provider = new ethers.BrowserProvider(window.ethereum)
+    const provider = new ethers.BrowserProvider(window.ethereum);
 
     const signer = await provider.getSigner();
 
     const contract = new ethers.Contract(
-      contractAddress,
+      global.selectedToken.tokenAddress,
       contractABI,
-      signer,
+      signer
     );
 
-    const [
-      a,
-      b,
-      c,
-      public_values
-    ] = JSON.parse(`[${publicArgs}]`)
+    const [a, b, c, public_values] = JSON.parse(`[${publicArgs}]`);
 
     try {
       const tx = await contract.transact(
@@ -331,7 +380,7 @@ const OpactContextProvider = ({ children }: any) => {
         [
           account,
           formatInteger(amount, 18),
-          tokenAddress,
+          global.selectedToken.tokenAddress,
           [],
           encryptedCommitments,
           outputCommitments,
@@ -340,21 +389,23 @@ const OpactContextProvider = ({ children }: any) => {
 
       console.log('tx', tx)
     } catch (e) {
-      console.warn(e)
+      console.warn(e);
     } finally {
       dispatch({
-        type: 'setLoadingWithdraw',
+        type: "setLoadingWithdraw",
         payload: false,
-      })
+      });
     }
-  }
+  };
 
   return (
     <OpactContext.Provider
       value={{
+        walletConnectModal,
         global,
         disconnect,
         sendDeposit,
+        selectToken,
         sendWithdraw,
         dispatchState,
         createRandomWallet,
