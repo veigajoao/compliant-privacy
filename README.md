@@ -77,4 +77,6 @@ The agent listens to all transactions into the protocol and performs the followi
 
 The frontend is a simple interface through which the user can interact with the protocol. It creates a key pair to be used inside of the protocol and keeps track of the user's UTXOs. It also creates the inclusion proofs for each transaction and fetches the list of malicious UTXOs from the AML agent.
 
+Ideally front end providers are going to link their operations to an AML agent. In that scenario, front ends might chose to not allow users to interact with UTXOs that are considered malicious by the AML agent or display warnings and provide ways for holders of malicious UTXOs to dispute their classification directly with the provider.
+
 **more considerations regarding the frontend are given in the front package's readme.md files**
