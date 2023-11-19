@@ -19,7 +19,7 @@ import React, {
 import { buildProof } from "@/utils/proof";
 import { loadArtifact } from "@/utils/artifacts";
 import { computeData } from "@/utils/data";
-import contractABI from "../contractAbi.json";
+import contractABI from "../contractABI.json";
 import { ethers } from "ethers";
 import tokenABI from "../tokenABI.json";
 import { createPublicClient, http } from "viem";
