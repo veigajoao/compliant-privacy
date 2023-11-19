@@ -2,6 +2,7 @@
 pragma solidity ^0.8.0;
 
 import "forge-std/Test.sol";
+import "forge-std/console.sol";
 import "../src/Core.sol";
 import "../src/Groth16Verifier.sol";
 
@@ -26,6 +27,9 @@ contract OpactTest is Test {
 
     function testTransact() public {
         vm.startPrank(walletWithTokens);
+
+        console.log("Last root: ");
+        console.logBytes32(core.getLastRoot());
 
         Core.CoreProof memory proof;
         Core.ExtData memory extData;

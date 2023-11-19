@@ -78,7 +78,7 @@ contract Core is MerkleTreeWithHistory {
     event NewTransaction(string encryptedValue);
     event NewEncryptedOutput(string encryptedOutput);
 
-    uint8 public constant MERKLE_TREE_HEIGHT = 31;
+    uint8 public constant MERKLE_TREE_HEIGHT = 32;
 
     IVerifier public verifier;
 
@@ -291,7 +291,7 @@ contract Core is MerkleTreeWithHistory {
 
         emit NewCommitment(
             outputCommitments[1],
-            index,
+            index + 1,
             encryptedOutput[1],
             subtreeRoot,
             msg.sender,
@@ -312,9 +312,9 @@ contract Core is MerkleTreeWithHistory {
         uint256[] memory publicValues
     ) private pure returns (uint256[] memory) {
         uint256[] memory publicNullifiers = new uint256[](
-            publicValues.length - 3
+            publicValues.length - 5
         );
-        for (uint i = 0; i < publicValues.length - 3; i++) {
+        for (uint i = 0; i < publicValues.length - 5; i++) {
             publicNullifiers[i] = publicValues[i + 2];
         }
 
