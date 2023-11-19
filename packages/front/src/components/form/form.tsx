@@ -4,6 +4,7 @@ import { Withdraw } from "./withdraw";
 import { DepositCompleteModal } from "./deposit-complete-modal";
 import { useState } from "react";
 import { MaliciousWalletModal } from "./malicious-wallet-modal";
+import { Scan } from "./scan";
 
 const classNames = (...classes) => classes.filter(Boolean).join(" ");
 
@@ -12,14 +13,14 @@ export function Actions() {
     useState(false);
   const [isMaliciousModalOpen, setIsMaliciousModalOpen] = useState(false);
 
-  const tabs = ["Deposit", "Withdraw"];
+  const tabs = ["Deposit", "Withdraw", "SafeSwim Scan"];
 
   return (
     <div
       className="
         w-[90%]
         min-w-[350px]
-        sm:w-[480px]
+        sm:max-w-[752px]
         bg-form-gradient
         py-[24px] space-y-[24px]
         my-[240px]
@@ -48,7 +49,7 @@ export function Actions() {
                 {tab}
               </Tab>
 
-              {i % 2 === 0 && (
+              {(i % 1 === 0 || i % 3 === 0) && i !== 2 && (
                 <div className="px-[16px] py-[5px] flex items-center justify-center">
                   <div className="h-[22px] w-[1px] bg-[#5B5F61]" />
                 </div>
@@ -64,6 +65,10 @@ export function Actions() {
 
           <Tab.Panel>
             <Withdraw />
+          </Tab.Panel>
+
+          <Tab.Panel>
+            <Scan />
           </Tab.Panel>
         </Tab.Panels>
       </Tab.Group>
