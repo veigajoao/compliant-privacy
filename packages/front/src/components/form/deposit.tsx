@@ -7,6 +7,7 @@ import { twMerge } from "tailwind-merge";
 import { useOpactContext } from "@/context/opact";
 import { Input } from "../input";
 import { useState } from 'react'
+import { Select } from "../select-token";
 
 export function Deposit() {
   const {
@@ -24,9 +25,13 @@ export function Deposit() {
           error={''}
           isValid={true}
           isDisabled={false}
-          label="Deposit Amount"
-          placeholder="Amount to depoist..."
+          label="Amount"
+          placeholder="0,00"
           onChange={(value) => setValue(value as string)}
+        />
+
+        <Select
+
         />
 
         <div

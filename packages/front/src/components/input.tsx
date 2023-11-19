@@ -23,8 +23,8 @@ export const Input = ({
   <div
     className="flex flex-col"
   >
-    <div className="flex items-center justify-between mb-[16px]">
-      <span className="font-title text-[18px] text-white font-[500]">
+    <div className="flex items-center justify-between">
+      <span className="font-title text-[16px] text-[#FAFAFA] font-[500]">
         {label}
 
         <If
@@ -38,8 +38,8 @@ export const Input = ({
 
     <input
       className={twMerge(
-        'px-[16px] h-[60px] bg-transparent rounded-[8px] text-[#919699] w-full flex items-center justify-between border-[1px] outline-none border-[#606466] font-title text-[16px] font-[500] opacity-[0.89] disabled:cursor-not-allowed',
-        isValid && '!border-white',
+        'px-[16px] h-[64px] bg-transparent rounded-[8px] text-[#919699] w-full flex items-center justify-between border-[1px] outline-none border-[#606466] font-title text-[16px] font-[500] opacity-[0.89] disabled:cursor-not-allowed',
+        isValid && 'mt-4',
         error && 'border-error'
       )}
       autoFocus

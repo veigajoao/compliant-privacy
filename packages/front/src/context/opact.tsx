@@ -330,7 +330,7 @@ const OpactContextProvider = ({ children }: any) => {
         ],
         [
           account,
-          formatInteger(amount, 18),
+          batch.delta.toString() * -1,
           tokenAddress,
           [],
           encryptedCommitments,

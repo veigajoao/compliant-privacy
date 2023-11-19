@@ -10,24 +10,23 @@ export function Actions() {
   return (
     <div
       className="
-        w-[90%]
-        min-w-[350px]
-        sm:w-[480px]
-        bg-form-gradient
+        min-w-[500px]
+        bg-[#0E1319]
         py-[24px] space-y-[24px]
         my-[240px]
-        rounded-[12px] border-[2px] border-solid border-[#606466] mx-auto z-[3] relative
+        p-[24px]
+        rounded-[12px] border-[1px] border-solid border-[#363B42] mx-auto z-[3] relative
       "
     >
       <Tab.Group
         as="div"
         className="
-          w-full px-[12px]
+          w-full
           space-y-[24px]
           flex flex-col items-center
         "
       >
-        <Tab.List className="flex w-full">
+        <Tab.List className="flex w-full justify-center space-x-8">
           {tabs.map((tab, i) => (
             <div
               key={tab}
@@ -36,25 +35,15 @@ export function Actions() {
               <Tab
                 className={({ selected }) =>
                   classNames(
-                    'px-[12px] py-[8px] font-title text-[16px] font-[500] select-none outline-none',
+                    'text-[16px] select-none outline-none px-[24px] py-[12px] rounded-[8px]',
                     selected
-                      ? "text-white"
-                      : "hover:text-white text-[#5B5F61] "
+                      ? "text-white bg-[#1752BA]"
+                      : "hover:text-white"
                   )
                 }
               >
                 {tab}
               </Tab>
-
-              { i % 2 === 0 &&
-                <div
-                  className="px-[16px] py-[5px] flex items-center justify-center"
-                >
-                  <div
-                    className="h-[22px] w-[1px] bg-[#5B5F61]"
-                  />
-                </div>
-              }
             </div>
           ))}
         </Tab.List>
