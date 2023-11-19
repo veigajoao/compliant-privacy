@@ -13,6 +13,11 @@ const EXPECTED_VALUE =
 export const computeTreeValues = async (utxosIn: any, isDeposit = false) => {
   const { tree, branches } = await new MerkleTreeService().initMerkleTree([]);
 
+  // TODO
+  // fetch events
+  // push commitments to MT
+  // add extra commit just to be sure
+
   /**
    * SUBTREE
    */
