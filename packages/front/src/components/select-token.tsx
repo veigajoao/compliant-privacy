@@ -27,7 +27,7 @@ export const SelectToken = () => {
         onClick={() => setIsOpen(true)}
         className="relative px-[16px] h-[60px] bg-transparent rounded-[8px] text-[#919699] w-full flex items-center justify-between border-[1px] outline-none border-white font-title text-[16px] font-[500] opacity-[0.89] disabled:cursor-not-allowed"
       >
-        {global.selectedToken.tokenAddress}
+        Choose Token
         <ChevronRightIcon className="absolute right-2 top-1/2 -translate-y-1/2 w-6 text-white" />
       </button>
 

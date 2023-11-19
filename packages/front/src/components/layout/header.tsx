@@ -41,6 +41,11 @@ export function Header() {
           </div>
 
           <div className="flex items-center gap-6">
+            <div className="flex space-x-2 rounded-[100px] border-[2px] py-2 px-4 border-[#1B6DFF]">
+              <p className="text-[14px] text-[#B8B8B8]">Balance</p>
+              {/* TODO: Adicionar balance da treeBalance */}
+              <p className="text-base">0</p>
+            </div>
             {global.wallet ? (
               <ButtonSecondary
                 withIcon={true}
