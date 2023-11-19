@@ -6,6 +6,7 @@
 .pnp.js
 /out
 .vercel
+.yarn
 
 #keys
 /neardev

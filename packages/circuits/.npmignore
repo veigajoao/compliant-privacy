@@ -1,0 +1,22 @@
+# Ignore all test files and directories
+/test
+/src/test
+
+# Ignore output directories
+/out
+/out_tests
+
+# Ignore node_modules
+/node_modules
+
+# Ignore the circuit files
+/circuits
+
+# Ignore package-lock.json to avoid conflicts with consumers
+package-lock.json
+
+# Ignore .env files as they usually contain sensitive information
+.env
+
+# Ignore the .npmrc file as it contains repository and token information
+.npmrc

@@ -1,0 +1,23 @@
+{
+  "name": "contracts",
+  "version": "0.0.1",
+  "description": "Contracts for project",
+  "main": "src/index.js",
+  "type": "module",
+  "private": "true",
+  "scripts": {
+    "hasher:compile": "node ./scripts/compileHasher.js"
+  },
+  "dependencies": {
+    "circomlib": "^2.0.5",
+    "circomlibjs": "^0.1.7",
+    "ethers": "^6.8.1",
+    "hardhat": "^2.19.1"
+  },
+  "workspaces": {
+    "nohoist": [
+      "circomlib",
+      "circomlib/**"
+    ]
+  }
+}
