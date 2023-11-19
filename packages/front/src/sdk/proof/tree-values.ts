@@ -23,6 +23,11 @@ export const computeTreeValues = async (
     ],
   );
 
+  // TODO
+  // fetch events
+  // push commitments to MT
+  // add extra commit just to be sure
+
   /**
    * SUBTREE
    */
