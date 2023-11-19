@@ -25,9 +25,7 @@ contract AmlMerkle is MerkleTreeWithHistory {
         _;
     }
 
-    function insertNew(
-        bool shouldRemove
-    ) public onlyOwner {
+    function insertNew(bool shouldRemove) public onlyOwner {
         if (shouldRemove) {
             _insert(bytes32(ZERO_VALUE));
         } else {
