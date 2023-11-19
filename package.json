@@ -6,6 +6,7 @@
   "scripts": {
     "postinstall": "yarn husky install",
     "front": "yarn workspace front",
+    "agents": "yarn workspace agents",
     "circuits": "yarn workspace circuits"
   },
   "engines": {

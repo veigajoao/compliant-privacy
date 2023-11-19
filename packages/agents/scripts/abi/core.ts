@@ -1,0 +1,782 @@
+export const coreAbi = [
+  {
+    type: "constructor",
+    inputs: [
+      {
+        name: "_verifier",
+        type: "address",
+        internalType: "address",
+      },
+    ],
+    stateMutability: "nonpayable",
+  },
+  {
+    type: "function",
+    name: "FIELD_SIZE",
+    inputs: [],
+    outputs: [
+      {
+        name: "",
+        type: "uint256",
+        internalType: "uint256",
+      },
+    ],
+    stateMutability: "view",
+  },
+  {
+    type: "function",
+    name: "MERKLE_TREE_HEIGHT",
+    inputs: [],
+    outputs: [
+      {
+        name: "",
+        type: "uint8",
+        internalType: "uint8",
+      },
+    ],
+    stateMutability: "view",
+  },
+  {
+    type: "function",
+    name: "ROOT_HISTORY_SIZE",
+    inputs: [],
+    outputs: [
+      {
+        name: "",
+        type: "uint32",
+        internalType: "uint32",
+      },
+    ],
+    stateMutability: "view",
+  },
+  {
+    type: "function",
+    name: "ZERO_VALUE",
+    inputs: [],
+    outputs: [
+      {
+        name: "",
+        type: "uint256",
+        internalType: "uint256",
+      },
+    ],
+    stateMutability: "view",
+  },
+  {
+    type: "function",
+    name: "admin",
+    inputs: [],
+    outputs: [
+      {
+        name: "",
+        type: "address",
+        internalType: "address",
+      },
+    ],
+    stateMutability: "view",
+  },
+  {
+    type: "function",
+    name: "calculatePublicAmount",
+    inputs: [
+      {
+        name: "amountInteger",
+        type: "int256",
+        internalType: "int256",
+      },
+    ],
+    outputs: [
+      {
+        name: "",
+        type: "uint256",
+        internalType: "uint256",
+      },
+    ],
+    stateMutability: "pure",
+  },
+  {
+    type: "function",
+    name: "currentRootIndex",
+    inputs: [],
+    outputs: [
+      {
+        name: "",
+        type: "uint32",
+        internalType: "uint32",
+      },
+    ],
+    stateMutability: "view",
+  },
+  {
+    type: "function",
+    name: "filledSubtrees",
+    inputs: [
+      {
+        name: "",
+        type: "uint256",
+        internalType: "uint256",
+      },
+    ],
+    outputs: [
+      {
+        name: "",
+        type: "bytes32",
+        internalType: "bytes32",
+      },
+    ],
+    stateMutability: "view",
+  },
+  {
+    type: "function",
+    name: "getLastRoot",
+    inputs: [],
+    outputs: [
+      {
+        name: "",
+        type: "bytes32",
+        internalType: "bytes32",
+      },
+    ],
+    stateMutability: "view",
+  },
+  {
+    type: "function",
+    name: "hashLeftRight",
+    inputs: [
+      {
+        name: "_left",
+        type: "bytes32",
+        internalType: "bytes32",
+      },
+      {
+        name: "_right",
+        type: "bytes32",
+        internalType: "bytes32",
+      },
+    ],
+    outputs: [
+      {
+        name: "",
+        type: "bytes32",
+        internalType: "bytes32",
+      },
+    ],
+    stateMutability: "view",
+  },
+  {
+    type: "function",
+    name: "hasher",
+    inputs: [],
+    outputs: [
+      {
+        name: "",
+        type: "address",
+        internalType: "contract IHasher",
+      },
+    ],
+    stateMutability: "view",
+  },
+  {
+    type: "function",
+    name: "isKnownRoot",
+    inputs: [
+      {
+        name: "_root",
+        type: "bytes32",
+        internalType: "bytes32",
+      },
+    ],
+    outputs: [
+      {
+        name: "",
+        type: "bool",
+        internalType: "bool",
+      },
+    ],
+    stateMutability: "view",
+  },
+  {
+    type: "function",
+    name: "isSpent",
+    inputs: [
+      {
+        name: "nullifier",
+        type: "uint256",
+        internalType: "uint256",
+      },
+    ],
+    outputs: [
+      {
+        name: "",
+        type: "bool",
+        internalType: "bool",
+      },
+    ],
+    stateMutability: "view",
+  },
+  {
+    type: "function",
+    name: "levels",
+    inputs: [],
+    outputs: [
+      {
+        name: "",
+        type: "uint32",
+        internalType: "uint32",
+      },
+    ],
+    stateMutability: "view",
+  },
+  {
+    type: "function",
+    name: "nextIndex",
+    inputs: [],
+    outputs: [
+      {
+        name: "",
+        type: "uint32",
+        internalType: "uint32",
+      },
+    ],
+    stateMutability: "view",
+  },
+  {
+    type: "function",
+    name: "nullifiers",
+    inputs: [
+      {
+        name: "",
+        type: "uint256",
+        internalType: "uint256",
+      },
+    ],
+    outputs: [
+      {
+        name: "",
+        type: "bool",
+        internalType: "bool",
+      },
+    ],
+    stateMutability: "view",
+  },
+  {
+    type: "function",
+    name: "roots",
+    inputs: [
+      {
+        name: "",
+        type: "uint256",
+        internalType: "uint256",
+      },
+    ],
+    outputs: [
+      {
+        name: "",
+        type: "bytes32",
+        internalType: "bytes32",
+      },
+    ],
+    stateMutability: "view",
+  },
+  {
+    type: "function",
+    name: "transact",
+    inputs: [
+      {
+        name: "proof",
+        type: "tuple",
+        internalType: "struct Core.CoreProof",
+        components: [
+          {
+            name: "publicValues",
+            type: "uint256[]",
+            internalType: "uint256[]",
+          },
+          {
+            name: "a",
+            type: "tuple",
+            internalType: "struct Core.G1Point",
+            components: [
+              {
+                name: "x",
+                type: "uint256",
+                internalType: "uint256",
+              },
+              {
+                name: "y",
+                type: "uint256",
+                internalType: "uint256",
+              },
+            ],
+          },
+          {
+            name: "b",
+            type: "tuple",
+            internalType: "struct Core.G2Point",
+            components: [
+              {
+                name: "x",
+                type: "uint256[2]",
+                internalType: "uint256[2]",
+              },
+              {
+                name: "y",
+                type: "uint256[2]",
+                internalType: "uint256[2]",
+              },
+            ],
+          },
+          {
+            name: "c",
+            type: "tuple",
+            internalType: "struct Core.G1Point",
+            components: [
+              {
+                name: "x",
+                type: "uint256",
+                internalType: "uint256",
+              },
+              {
+                name: "y",
+                type: "uint256",
+                internalType: "uint256",
+              },
+            ],
+          },
+        ],
+      },
+      {
+        name: "extData",
+        type: "tuple",
+        internalType: "struct Core.ExtData",
+        components: [
+          {
+            name: "recipient",
+            type: "address",
+            internalType: "address",
+          },
+          {
+            name: "tokenAmount",
+            type: "int256",
+            internalType: "int256",
+          },
+          {
+            name: "tokenAddress",
+            type: "address",
+            internalType: "address",
+          },
+          {
+            name: "encryptedReceipts",
+            type: "string[]",
+            internalType: "string[]",
+          },
+          {
+            name: "encryptedCommitments",
+            type: "string[]",
+            internalType: "string[]",
+          },
+          {
+            name: "outputCommitments",
+            type: "uint256[]",
+            internalType: "uint256[]",
+          },
+        ],
+      },
+    ],
+    outputs: [
+      {
+        name: "",
+        type: "bool",
+        internalType: "bool",
+      },
+    ],
+    stateMutability: "nonpayable",
+  },
+  {
+    type: "function",
+    name: "validateTransact",
+    inputs: [
+      {
+        name: "proof",
+        type: "tuple",
+        internalType: "struct Core.CoreProof",
+        components: [
+          {
+            name: "publicValues",
+            type: "uint256[]",
+            internalType: "uint256[]",
+          },
+          {
+            name: "a",
+            type: "tuple",
+            internalType: "struct Core.G1Point",
+            components: [
+              {
+                name: "x",
+                type: "uint256",
+                internalType: "uint256",
+              },
+              {
+                name: "y",
+                type: "uint256",
+                internalType: "uint256",
+              },
+            ],
+          },
+          {
+            name: "b",
+            type: "tuple",
+            internalType: "struct Core.G2Point",
+            components: [
+              {
+                name: "x",
+                type: "uint256[2]",
+                internalType: "uint256[2]",
+              },
+              {
+                name: "y",
+                type: "uint256[2]",
+                internalType: "uint256[2]",
+              },
+            ],
+          },
+          {
+            name: "c",
+            type: "tuple",
+            internalType: "struct Core.G1Point",
+            components: [
+              {
+                name: "x",
+                type: "uint256",
+                internalType: "uint256",
+              },
+              {
+                name: "y",
+                type: "uint256",
+                internalType: "uint256",
+              },
+            ],
+          },
+        ],
+      },
+      {
+        name: "extData",
+        type: "tuple",
+        internalType: "struct Core.ExtData",
+        components: [
+          {
+            name: "recipient",
+            type: "address",
+            internalType: "address",
+          },
+          {
+            name: "tokenAmount",
+            type: "int256",
+            internalType: "int256",
+          },
+          {
+            name: "tokenAddress",
+            type: "address",
+            internalType: "address",
+          },
+          {
+            name: "encryptedReceipts",
+            type: "string[]",
+            internalType: "string[]",
+          },
+          {
+            name: "encryptedCommitments",
+            type: "string[]",
+            internalType: "string[]",
+          },
+          {
+            name: "outputCommitments",
+            type: "uint256[]",
+            internalType: "uint256[]",
+          },
+        ],
+      },
+    ],
+    outputs: [
+      {
+        name: "",
+        type: "bool",
+        internalType: "bool",
+      },
+    ],
+    stateMutability: "nonpayable",
+  },
+  {
+    type: "function",
+    name: "verifier",
+    inputs: [],
+    outputs: [
+      {
+        name: "",
+        type: "address",
+        internalType: "contract IVerifier",
+      },
+    ],
+    stateMutability: "view",
+  },
+  {
+    type: "function",
+    name: "verifyCoreProof",
+    inputs: [
+      {
+        name: "proof",
+        type: "tuple",
+        internalType: "struct Core.CoreProof",
+        components: [
+          {
+            name: "publicValues",
+            type: "uint256[]",
+            internalType: "uint256[]",
+          },
+          {
+            name: "a",
+            type: "tuple",
+            internalType: "struct Core.G1Point",
+            components: [
+              {
+                name: "x",
+                type: "uint256",
+                internalType: "uint256",
+              },
+              {
+                name: "y",
+                type: "uint256",
+                internalType: "uint256",
+              },
+            ],
+          },
+          {
+            name: "b",
+            type: "tuple",
+            internalType: "struct Core.G2Point",
+            components: [
+              {
+                name: "x",
+                type: "uint256[2]",
+                internalType: "uint256[2]",
+              },
+              {
+                name: "y",
+                type: "uint256[2]",
+                internalType: "uint256[2]",
+              },
+            ],
+          },
+          {
+            name: "c",
+            type: "tuple",
+            internalType: "struct Core.G1Point",
+            components: [
+              {
+                name: "x",
+                type: "uint256",
+                internalType: "uint256",
+              },
+              {
+                name: "y",
+                type: "uint256",
+                internalType: "uint256",
+              },
+            ],
+          },
+        ],
+      },
+    ],
+    outputs: [
+      {
+        name: "",
+        type: "bool",
+        internalType: "bool",
+      },
+    ],
+    stateMutability: "nonpayable",
+  },
+  {
+    type: "function",
+    name: "verifyWithLength",
+    inputs: [
+      {
+        name: "n",
+        type: "uint256",
+        internalType: "uint256",
+      },
+      {
+        name: "proof",
+        type: "tuple",
+        internalType: "struct Core.CoreProof",
+        components: [
+          {
+            name: "publicValues",
+            type: "uint256[]",
+            internalType: "uint256[]",
+          },
+          {
+            name: "a",
+            type: "tuple",
+            internalType: "struct Core.G1Point",
+            components: [
+              {
+                name: "x",
+                type: "uint256",
+                internalType: "uint256",
+              },
+              {
+                name: "y",
+                type: "uint256",
+                internalType: "uint256",
+              },
+            ],
+          },
+          {
+            name: "b",
+            type: "tuple",
+            internalType: "struct Core.G2Point",
+            components: [
+              {
+                name: "x",
+                type: "uint256[2]",
+                internalType: "uint256[2]",
+              },
+              {
+                name: "y",
+                type: "uint256[2]",
+                internalType: "uint256[2]",
+              },
+            ],
+          },
+          {
+            name: "c",
+            type: "tuple",
+            internalType: "struct Core.G1Point",
+            components: [
+              {
+                name: "x",
+                type: "uint256",
+                internalType: "uint256",
+              },
+              {
+                name: "y",
+                type: "uint256",
+                internalType: "uint256",
+              },
+            ],
+          },
+        ],
+      },
+    ],
+    outputs: [
+      {
+        name: "",
+        type: "bool",
+        internalType: "bool",
+      },
+    ],
+    stateMutability: "nonpayable",
+  },
+  {
+    type: "function",
+    name: "zeros",
+    inputs: [
+      {
+        name: "i",
+        type: "uint256",
+        internalType: "uint256",
+      },
+    ],
+    outputs: [
+      {
+        name: "",
+        type: "bytes32",
+        internalType: "bytes32",
+      },
+    ],
+    stateMutability: "pure",
+  },
+  {
+    type: "event",
+    name: "NewCommitment",
+    inputs: [
+      {
+        name: "commitment",
+        type: "uint256",
+        indexed: false,
+        internalType: "uint256",
+      },
+      {
+        name: "index",
+        type: "uint256",
+        indexed: false,
+        internalType: "uint256",
+      },
+      {
+        name: "encryptedOutput",
+        type: "string",
+        indexed: false,
+        internalType: "string",
+      },
+      {
+        name: "subtreeRoot",
+        type: "uint256",
+        indexed: false,
+        internalType: "uint256",
+      },
+      {
+        name: "sender",
+        type: "address",
+        indexed: false,
+        internalType: "address",
+      },
+      {
+        name: "depositValue",
+        type: "int256",
+        indexed: false,
+        internalType: "int256",
+      },
+    ],
+    anonymous: false,
+  },
+  {
+    type: "event",
+    name: "NewEncryptedOutput",
+    inputs: [
+      {
+        name: "encryptedOutput",
+        type: "string",
+        indexed: false,
+        internalType: "string",
+      },
+    ],
+    anonymous: false,
+  },
+  {
+    type: "event",
+    name: "NewNullifier",
+    inputs: [
+      {
+        name: "nullifier",
+        type: "uint256[]",
+        indexed: false,
+        internalType: "uint256[]",
+      },
+    ],
+    anonymous: false,
+  },
+  {
+    type: "event",
+    name: "NewTransaction",
+    inputs: [
+      {
+        name: "encryptedValue",
+        type: "string",
+        indexed: false,
+        internalType: "string",
+      },
+    ],
+    anonymous: false,
+  },
+] as const;
