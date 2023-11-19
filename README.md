@@ -24,6 +24,8 @@ We also propose a solution to the problem of malicious deposit detection by buil
 
 The agent posts an on chain list of malicious transactions that every withdrawal must dissociate from in order to be considered licit.
 
+The Endgame goal is for this to become an EIP and be approved as a standard way to perform private transaction on Ethereum. That would give legitimacy to the AML concept and incentivize regulators and risk analysis firms to come to the table to discuss, improve and learn how to work with native privacy primitives in Ethereum.
+
 **It's important to notice that all considerations regarding maliciousness of transactions and withdrawals are performed by off chain agents that are NOT linked to the core protocol. The protocol is never going to lock funds based on an agent flagging it as possibly malicious - however centralized entities are going to chose not to interact with those funds based on their bad risk score**
 
 ## Architecture
@@ -80,3 +82,21 @@ The frontend is a simple interface through which the user can interact with the 
 Ideally front end providers are going to link their operations to an AML agent. In that scenario, front ends might chose to not allow users to interact with UTXOs that are considered malicious by the AML agent or display warnings and provide ways for holders of malicious UTXOs to dispute their classification directly with the provider.
 
 **more considerations regarding the frontend are given in the front package's readme.md files**
+
+# Next Steps / TODOs
+
+Constructing such an advanced privacy protocol in Ethereum is a huge challenge and some tasks were not completed during the Hackathon and have been mocked to show functionality. The following is a list of tasks that need to be completed to make the protocol production ready:
+- Validation of merkle root correctness inside *transact* function in core contract
+- Frontend event streaming for merkle tree updates
+- Real time deployment of AML agent (currently depends on low throughput testnet)
+- Advanced analysis of subset proofs to recognize complex exclusion patterns (currently AML agent uses a heuristic that denies all transactions that don't follow their specific anonymity set, even if they are more rigorous than the AML agent's)
+
+## Acknowledgements
+
+This project was not build from 0. We used the following resources as a starting point:
+- [Tornado Cash](https://github.com/tornadocash)
+- [Tornado Cash Nova](https://github.com/tornadocash/tornado-nova)
+- [Railgun](https://github.com/Railgun-Privacy/contract)
+- [ZeroPool](https://github.com/zeropoolnetwork)
+- [OpactWallet](https://github.com/opact-protocol)
+- [Privacy Pools](https://github.com/ameensol/privacy-pools)
