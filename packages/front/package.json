@@ -29,6 +29,7 @@
     "ethers": "^6.8.1",
     "file-saver": "^2.0.5",
     "graphql": "^16.8.0",
+    "husky": "^8.0.3",
     "localforage": "^1.10.0",
     "node-stdlib-browser": "^1.2.0",
     "opact-sdk": "^1.0.84",
