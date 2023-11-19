@@ -48,11 +48,11 @@ contract MerkleTreeWithHistory {
   }
 
   // Modified to insert pairs of leaves for better efficiency
-  function _insert(bytes32 _leaf1, bytes32 _leaf2) internal returns (uint32 index) {
+    function _insert(bytes32 _leaf) internal returns (uint32 index) {
     uint32 _nextIndex = nextIndex;
-    require(_nextIndex != uint64(2)**levels, "Merkle tree is full. No more leaves can be added");
-    uint32 currentIndex = _nextIndex / 2;
-    bytes32 currentLevelHash = hashLeftRight(_leaf1, _leaf2);
+    require(_nextIndex != uint32(2)**levels, "Merkle tree is full. No more leaves can be added");
+    uint32 currentIndex = _nextIndex;
+    bytes32 currentLevelHash = _leaf;
     bytes32 left;
     bytes32 right;
 
@@ -72,7 +72,7 @@ contract MerkleTreeWithHistory {
     uint32 newRootIndex = (currentRootIndex + 1) % ROOT_HISTORY_SIZE;
     currentRootIndex = newRootIndex;
     roots[newRootIndex] = currentLevelHash;
-    nextIndex = _nextIndex + 2;
+    nextIndex = _nextIndex + 1;
     return _nextIndex;
   }
 

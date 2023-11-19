@@ -13,7 +13,7 @@ contract AmlMerkle is MerkleTreeWithHistory {
     event NewLeaf(
         uint256 indexed index,
         bool shouldRemove,
-        uint256 merkleRoot
+        bytes32 merkleRoot
     );
 
     constructor() MerkleTreeWithHistory(MERKLE_TREE_HEIGHT) {
