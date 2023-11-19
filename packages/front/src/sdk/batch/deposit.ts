@@ -9,6 +9,7 @@ export const getDepositSoluctionBatch = async ({
   senderWallet,
   totalRequired,
   selectedToken,
+  commitments,
 }: any) => {
   const derivedKeys = deriveBabyJubKeysFromEth(senderWallet)
 
@@ -55,7 +56,7 @@ export const getDepositSoluctionBatch = async ({
   const {
     roots,
     newIns
-  } = await computeTreeValues(utxosIn)
+  } = await computeTreeValues(utxosIn, commitments)
 
   return {
     delta,

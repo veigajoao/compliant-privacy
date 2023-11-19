@@ -1,6 +1,6 @@
 import { computeInputs, decrypt, encrypt, formatInteger, getDepositSoluctionBatch, getRandomWallet, getTransferSolutionBatch, getWalletFromMnemonic } from '@/sdk';
 import { walletStorage } from '@/utils';
-import React, { createContext, useReducer, useContext, useState, useEffect } from 'react';
+import React, { createContext, useReducer, useContext, useEffect } from 'react';
 import {
   buildProof,
 } from '@/utils/proof'
@@ -17,8 +17,8 @@ export const publicClient = createPublicClient({
   transport: http()
 })
 
-const tokenAddress = '0xcf185f2F3Fe19D82bFdcee59E3330FD7ba5f27ce'
-const contractAddress = '0xD2756f78c72ad740BB8f82dD97F0CBa01E6e5337'
+export const tokenAddress = '0xcf185f2F3Fe19D82bFdcee59E3330FD7ba5f27ce'
+export const contractAddress = '0x67aC456e9B879Ba57326917c3E8c16Dc40785F23'
 
 const initialState = {
   wallet: null,
@@ -158,7 +158,19 @@ const OpactContextProvider = ({ children }: any) => {
 
     const { wallet } = global
 
+    const commitmentsEvent = await publicClient.getContractEvents({
+      address: contractAddress,
+      abi: contractABI,
+      eventName: 'NewCommitment',
+      fromBlock: 4720739n,
+    })
+
+    const commitments = commitmentsEvent.map(({ args}: any) => ({
+      value: args.commitment
+    }))
+
     const batch = await getDepositSoluctionBatch({
+      commitments,
       senderWallet: wallet,
       totalRequired: rawAmount,
       selectedToken: tokenAddress,
@@ -209,13 +221,8 @@ const OpactContextProvider = ({ children }: any) => {
       public_values
     ] = JSON.parse(`[${publicArgs}]`)
 
-    console.log('fofofoofof',
-      encryptedCommitments,
-      outputCommitments
-    )
-
     try {
-      await contract.transact(
+      const tx = await contract.transact(
         [
           public_values,
           a,
@@ -231,6 +238,8 @@ const OpactContextProvider = ({ children }: any) => {
           outputCommitments,
         ]
       )
+
+      console.log('tx', tx)
     } catch (e) {
       console.warn(e)
     } finally {
@@ -255,8 +264,22 @@ const OpactContextProvider = ({ children }: any) => {
 
     const treeBalance = treeBalances[tokenAddress]
 
+    const commitmentsEvent = await publicClient.getContractEvents({
+      address: contractAddress,
+      abi: contractABI,
+      eventName: 'NewCommitment',
+      fromBlock: 4720739n,
+    })
+
+    console.log('commitmentsEvent, ', commitmentsEvent)
+
+    const commitments = commitmentsEvent.map(({ args}: any) => ({
+      value: args.commitment
+    }))
+
     const batch = await getTransferSolutionBatch({
       treeBalance,
+      commitments,
       selectedToken: tokenAddress,
       senderWallet: wallet,
       totalRequired: amount
@@ -298,7 +321,7 @@ const OpactContextProvider = ({ children }: any) => {
     ] = JSON.parse(`[${publicArgs}]`)
 
     try {
-      await contract.transact(
+      const tx = await contract.transact(
         [
           public_values,
           a,
@@ -314,6 +337,8 @@ const OpactContextProvider = ({ children }: any) => {
           outputCommitments,
         ]
       )
+
+      console.log('tx', tx)
     } catch (e) {
       console.warn(e)
     } finally {

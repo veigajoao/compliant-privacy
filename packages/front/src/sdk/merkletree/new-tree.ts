@@ -23,20 +23,20 @@ export class MerkleTreeService {
     this.RPC = 'https://bpsd19dro1.execute-api.us-east-2.amazonaws.com'
   }
 
-  async initMerkleTree(localItems: any[], baseElements: any[] = [], onlyLocal = false): Promise<any> {
+  async initMerkleTree(localItems: any[], branches: any[] = [], onlyLocal = false): Promise<any> {
     const { hash } = await (new PoseidonClass()).load();
 
-    const branches = await this.getBranches();
+    // const branches = await this.getBranches();
 
     let items: any[] = [...localItems];
 
     if (!onlyLocal) {
-      items = [...items, ...branches.map(({ value }: any) => BigInt(value))]
+      items = [...items, ...branches]
     }
 
     this.branches = branches
 
-    const tree = new FixedMerkleTree(32, baseElements,
+    const tree = new FixedMerkleTree(32, [],
       {
         zeroElement: 19014214495641488759237505126948346942972912379615652741039992445865937985820n as any,
         hashFunction: hash,
@@ -50,7 +50,7 @@ export class MerkleTreeService {
     }
 
     items.forEach((value: any, i: number) => {
-      const pos = baseElements.length + i
+      const pos = 0 + i
 
       try {
         tree.update(pos, value);
@@ -71,32 +71,33 @@ export class MerkleTreeService {
 
   // TODO: GET BRANCHES FROM THEGRAPH ONLY
   async getBranches(): Promise<any> {
-    let branches: any[] = []
+    return []
+    // let branches: any[] = []
 
-    const nullifiersEvent = await publicClient.getContractEvents({
-      address: contractAddress,
-      abi: contractABI,
-      eventName: 'NewNullifier',
-      fromBlock: 4720739n,
-    })
+    // const nullifiersEvent = await publicClient.getContractEvents({
+    //   address: contractAddress,
+    //   abi: contractABI,
+    //   eventName: 'NewNullifier',
+    //   fromBlock: 4720739n,
+    // })
 
-    const nullifiers = nullifiersEvent.map(({ args }: any) => args.nullifier).flat(1)
+    // const nullifiers = nullifiersEvent.map(({ args }: any) => args.nullifier).flat(1)
 
-    let isLastPage = false
+    // let isLastPage = false
 
-    while (!isLastPage) {
-      const response = await fetch(`${this.RPC}/commitments`)
+    // while (!isLastPage) {
+    //   const response = await fetch(`${this.RPC}/commitments`)
 
-      const {
-        data,
-        is_last_page
-      } = await response.json()
+    //   const {
+    //     data,
+    //     is_last_page
+    //   } = await response.json()
 
-      branches = [...branches, ...data]
+    //   branches = [...branches, ...data]
 
-      isLastPage = is_last_page
-    }
+    //   isLastPage = is_last_page
+    // }
 
-    return branches
+    // return branches
   }
 }

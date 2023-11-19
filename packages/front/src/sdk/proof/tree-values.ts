@@ -3,15 +3,25 @@
 import { MerkleTree, MerkleTreeService } from '../merkletree';
 
 const PROOF_LENGTH = 32;
-
 /**
  * SUBTREE
  */
 const EXPECTED_VALUE =
   11954255677048767585730959529592939615262310191150853775895456173962480955685n;
 
-export const computeTreeValues = async (utxosIn: any, isDeposit = false) => {
-  const { tree, branches } = await new MerkleTreeService().initMerkleTree([]);
+export const computeTreeValues = async (
+  utxosIn: any,
+  commitments,
+  isDeposit = false
+  ) => {
+  const { tree, branches } = await new MerkleTreeService().initMerkleTree(
+    [
+      ...commitments.map(({ value }: any) => BigInt(value)),
+      19014214495641488759237505126948346942972912379615652741039992445865937985820n,
+      19014214495641488759237505126948346942972912379615652741039992445865937985820n,
+      19014214495641488759237505126948346942972912379615652741039992445865937985820n,
+    ],
+  );
 
   /**
    * SUBTREE

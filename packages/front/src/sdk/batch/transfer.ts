@@ -14,6 +14,7 @@ export const getTransferSolutionBatch = async ({
   totalRequired,
   receiverPubkey,
   selectedToken,
+  commitments,
   excludedUTXOIDPositions = [],
 }: any) => {
   if (receiverPubkey) {
@@ -48,7 +49,7 @@ export const getTransferSolutionBatch = async ({
 
   const delta = await getDelta({ utxosOut, utxosIn });
 
-  const { roots, newIns } = await computeTreeValues(utxosIn);
+  const { roots, newIns } = await computeTreeValues(utxosIn, commitments);
 
   return {
     delta,
