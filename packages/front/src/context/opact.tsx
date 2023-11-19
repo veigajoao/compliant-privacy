@@ -18,7 +18,7 @@ export const publicClient = createPublicClient({
 })
 
 export const tokenAddress = '0xcf185f2F3Fe19D82bFdcee59E3330FD7ba5f27ce'
-export const contractAddress = '0x67aC456e9B879Ba57326917c3E8c16Dc40785F23'
+export const contractAddress = '0x956c0344945cDcB89A3E1AE3037f1FA0234EAbDa'
 
 const initialState = {
   wallet: null,
