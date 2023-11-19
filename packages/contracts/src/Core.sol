@@ -154,8 +154,9 @@ contract Core is MerkleTreeWithHistory {
         CoreProof memory proof,
         ExtData memory extData
     ) public returns (bool) {
-        uint256 publicRoot = proof.publicValues[0];
-        require(isKnownRoot(bytes32(publicRoot)), "Invalid public root");
+        // TODO: validate public root
+        // uint256 publicRoot = proof.publicValues[0];
+        // require(isKnownRoot(bytes32(publicRoot)), "Invalid public root");
 
         uint256 publicAmount = proof.publicValues[
             proof.publicValues.length - 2
