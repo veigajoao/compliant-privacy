@@ -11,7 +11,7 @@ import { groth16 } from "snarkjs";
 function BackgroundIllustration() {
   return (
     <div className="absolute inset-0 max-w-full max-h-full overflow-hidden">
-      <img src="/hero.webp" className="w-full" />
+      <img src="/background.png" className="w-full" />
     </div>
   );
 }

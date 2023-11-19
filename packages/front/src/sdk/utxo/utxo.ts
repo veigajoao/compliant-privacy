@@ -39,6 +39,8 @@ export const getUtxo = ({
 }: any): any => {
   const blinding = BigInt(`0x${toHex(getRandomBytesSync(32))}`)
 
+  console.log('foo', 'blinding', blinding)
+
   const core =  {
     token,
     amount,

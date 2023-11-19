@@ -7,7 +7,9 @@ import { createDataWorker } from './data-worker';
 export const computeData = async ({
   secret,
   currentId,
+  nullifiers,
   storedUtxos,
+  encryptedCommitments,
 }: any): Promise<any> => {
   const { worker, handlers } = createDataWorker()
 
@@ -17,7 +19,9 @@ export const computeData = async ({
     const { payload } = await handlers.getData({
       secret,
       currentId,
+      nullifiers,
       storedUtxos,
+      encryptedCommitments,
     }) as any
 
     if (!payload) {

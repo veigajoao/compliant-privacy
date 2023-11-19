@@ -5,13 +5,21 @@ self.addEventListener("message", async (event: any) => {
     const {
       secret,
       currentId,
+      nullifiers,
       storedUtxos,
+      encryptedCommitments,
     } = event.data.input as any;
 
     const {
       lastId,
       treeBalances,
-    } = await getUserBalanceBySecret(secret, currentId, storedUtxos)
+    } = await getUserBalanceBySecret(
+      secret,
+      currentId,
+      storedUtxos,
+      nullifiers,
+      encryptedCommitments,
+    )
 
     self.postMessage(
       {

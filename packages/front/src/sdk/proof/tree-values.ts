@@ -11,9 +11,7 @@ const EXPECTED_VALUE =
   11954255677048767585730959529592939615262310191150853775895456173962480955685n;
 
 export const computeTreeValues = async (utxosIn: any, isDeposit = false) => {
-  const { tree, branches } = await new MerkleTreeService().initMerkleTree([
-    0, 0, 0,
-  ]);
+  const { tree, branches } = await new MerkleTreeService().initMerkleTree([]);
 
   /**
    * SUBTREE

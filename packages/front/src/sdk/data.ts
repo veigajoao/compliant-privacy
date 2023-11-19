@@ -7,53 +7,10 @@ export const getUserBalanceBySecret = async (
   secret: any,
   currentId: any,
   storedUtxos: any,
+  nullifiers: any,
+  encryptedCommitments: any,
 ) => {
-  let lastId = currentId
-
-  let isLastPage = false
-
-  let encrypted: any[] = []
-
-  while (!isLastPage) {
-    // const response = await fetch(`${RPC}/encrypted?salt=${currentId as string}`)
-
-    // const {
-    //   data,
-    //   last_tx_id,
-    //   is_last_page
-    // } = await response.json()
-    const data = commitments
-
-    encrypted = [...encrypted, ...data]
-
-    isLastPage = true
-    // isLastPage = is_last_page
-
-    if (isLastPage) {
-      lastId = 10
-    }
-  }
-
-  let nullifierIsLastPage = false
-
-  let nullifiers: any[] = []
-
-  while (!nullifierIsLastPage) {
-    // const response = await fetch(`${RPC}/nullifiers`)
-
-    // const {
-    //   data,
-    //   is_last_page
-    // } = await response.json()
-    const data = []
-
-    nullifiers = [...nullifiers, ...data]
-
-    nullifierIsLastPage = true
-    // nullifierIsLastPage = is_last_page
-  }
-
-  encrypted = encrypted.map((item: any) => {
+  const encrypted = encryptedCommitments.map((item: any) => {
     try {
       const value = decrypt({
         encrypted: item,
@@ -67,7 +24,6 @@ export const getUserBalanceBySecret = async (
   }).filter(item => !!item)
 
   return {
-    lastId,
     ...groupUtxoByToken([...storedUtxos, ...encrypted], nullifiers, secret)
   }
 }

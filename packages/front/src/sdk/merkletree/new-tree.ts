@@ -2,6 +2,10 @@
 /* eslint-disable @typescript-eslint/strict-boolean-expressions */
 import MerkleTree, { MerkleTree as FixedMerkleTree } from "fixed-merkle-tree";
 import { PoseidonClass } from "./hash";
+import { publicClient } from "@/context/opact";
+import contractABI from '../../contractAbi.json'
+
+const contractAddress = '0xD2756f78c72ad740BB8f82dD97F0CBa01E6e5337'
 
 export class MerkleTreeService {
   readonly name: string;
@@ -68,6 +72,15 @@ export class MerkleTreeService {
   // TODO: GET BRANCHES FROM THEGRAPH ONLY
   async getBranches(): Promise<any> {
     let branches: any[] = []
+
+    const nullifiersEvent = await publicClient.getContractEvents({
+      address: contractAddress,
+      abi: contractABI,
+      eventName: 'NewNullifier',
+      fromBlock: 4720739n,
+    })
+
+    const nullifiers = nullifiersEvent.map(({ args }: any) => args.nullifier).flat(1)
 
     let isLastPage = false
 

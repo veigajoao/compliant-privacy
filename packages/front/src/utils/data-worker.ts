@@ -7,14 +7,18 @@ export function createDataWorker() {
   const getData = ({
     secret,
     currentId,
+    nullifiers,
     storedUtxos,
+    encryptedCommitments,
   }: any) => {
     return new Promise<Blob[]>((resolve, reject) => {
       worker.postMessage({
         input: {
           secret,
           currentId,
+          nullifiers,
           storedUtxos,
+          encryptedCommitments,
         }
       })
 

@@ -1,4 +1,4 @@
-import { computeInputs, decrypt, encrypt, getDepositSoluctionBatch, getRandomWallet, getTransferSolutionBatch, getWalletFromMnemonic } from '@/sdk';
+import { computeInputs, decrypt, encrypt, formatInteger, getDepositSoluctionBatch, getRandomWallet, getTransferSolutionBatch, getWalletFromMnemonic } from '@/sdk';
 import { walletStorage } from '@/utils';
 import React, { createContext, useReducer, useContext, useState, useEffect } from 'react';
 import {
@@ -7,10 +7,18 @@ import {
 import { loadArtifact } from '@/utils/artifacts';
 import { computeData } from '@/utils/data';
 import contractABI from '../contractAbi.json'
-import { ethers } from 'ethers';
+import { ethers } from "ethers";
+import tokenABI from '../tokenABI.json'
+import { createPublicClient, http } from 'viem'
+import { sepolia } from 'viem/chains'
 
-const contractAddress = '0x7E8C10a65e54c552557CcF59Ca5DaBE85180cB7C'
+export const publicClient = createPublicClient({
+  chain: sepolia,
+  transport: http()
+})
+
 const tokenAddress = '0xcf185f2F3Fe19D82bFdcee59E3330FD7ba5f27ce'
+const contractAddress = '0xD2756f78c72ad740BB8f82dD97F0CBa01E6e5337'
 
 const initialState = {
   wallet: null,
@@ -103,11 +111,33 @@ const OpactContextProvider = ({ children }: any) => {
         payload: wallet,
       })
 
-      const treeBalances = await computeData({
-        secret: wallet.pvtkey,
-        currentId: 0,
-        storedUtxos: [],
+      const encryptedEvents = await publicClient.getContractEvents({
+        address: contractAddress,
+        abi: contractABI,
+        eventName: 'NewEncryptedOutput',
+        fromBlock: 4720739n,
       })
+
+      const encryptedCommitments = encryptedEvents.map(({ args }: any) => args.encryptedOutput)
+
+      const nullifiersEvent = await publicClient.getContractEvents({
+        address: contractAddress,
+        abi: contractABI,
+        eventName: 'NewNullifier',
+        fromBlock: 4720739n,
+      })
+
+      const nullifiers = nullifiersEvent.map(({ args }: any) => args.nullifier).flat(1)
+
+      const treeBalances = await computeData({
+        storedUtxos: [],
+        currentId: 0,
+        nullifiers,
+        encryptedCommitments,
+        secret: wallet.pvtkey,
+      })
+
+      console.log('treeBalances', treeBalances)
 
       dispatch({
         type: 'setTreeBalances',
@@ -116,9 +146,7 @@ const OpactContextProvider = ({ children }: any) => {
     })()
   }, [])
 
-  const sendDeposit = async ({
-    amount = 1,
-  }) => {
+  const sendDeposit = async (rawAmount: string) => {
     if (global.loadingDeposit || !global.wallet || !window?.ethereum) {
       return
     }
@@ -132,7 +160,7 @@ const OpactContextProvider = ({ children }: any) => {
 
     const batch = await getDepositSoluctionBatch({
       senderWallet: wallet,
-      totalRequired: amount,
+      totalRequired: rawAmount,
       selectedToken: tokenAddress,
     });
 
@@ -154,9 +182,19 @@ const OpactContextProvider = ({ children }: any) => {
 
     const account = (await window.ethereum.request({ method: 'eth_requestAccounts' }))[0];
 
-    const provider = new ethers.providers.Web3Provider(window.ethereum);
+    const provider = new ethers.BrowserProvider(window.ethereum)
 
-    const signer = provider.getSigner();
+    const signer = await provider.getSigner();
+
+    const contractToken = new ethers.Contract(
+      tokenAddress,
+      tokenABI,
+      signer,
+    )
+
+    const amount = formatInteger(rawAmount, 18)
+
+    await contractToken.approve(contractAddress, amount)
 
     const contract = new ethers.Contract(
       contractAddress,
@@ -164,27 +202,46 @@ const OpactContextProvider = ({ children }: any) => {
       signer,
     );
 
-    const tx = contract.transact(
-      publicArgs,
-      {
-        tokenAddress,
-        outputCommitments,
-        recipient: account,
-        tokenAmount: amount,
-        encryptedCommitments,
-        encryptedReceipts: [],
-      },
+    const [
+      a,
+      b,
+      c,
+      public_values
+    ] = JSON.parse(`[${publicArgs}]`)
+
+    console.log('fofofoofof',
+      encryptedCommitments,
+      outputCommitments
     )
 
-    dispatch({
-      type: 'setLoadingDeposit',
-      payload: false,
-    })
+    try {
+      await contract.transact(
+        [
+          public_values,
+          a,
+          b,
+          c,
+        ],
+        [
+          account,
+          amount,
+          tokenAddress,
+          [],
+          encryptedCommitments,
+          outputCommitments,
+        ]
+      )
+    } catch (e) {
+      console.warn(e)
+    } finally {
+      dispatch({
+        type: 'setLoadingDeposit',
+        payload: false,
+      })
+    }
   }
 
-  const sendWithdraw = async ({
-    treeBalance,
-  }) => {
+  const sendWithdraw = async (amount = 1) => {
     if (global.loadingDeposit || !global.wallet || !window?.ethereum) {
       return
     }
@@ -194,13 +251,15 @@ const OpactContextProvider = ({ children }: any) => {
       payload: true,
     })
 
-    const { wallet } = global
+    const { wallet, treeBalances } = global
+
+    const treeBalance = treeBalances[tokenAddress]
 
     const batch = await getTransferSolutionBatch({
       treeBalance,
-      selectedToken: 'erc2020',
+      selectedToken: tokenAddress,
       senderWallet: wallet,
-      totalRequired: 10
+      totalRequired: amount
     })
 
     const { inputs } = await computeInputs({
@@ -217,20 +276,52 @@ const OpactContextProvider = ({ children }: any) => {
       address: wallet.address
     }))
 
+    const outputCommitments = batch.utxosOut.map((utxo: any) => utxo.hash.toString())
+
     const account = (await window.ethereum.request({ method: 'eth_requestAccounts' }))[0];
 
-    console.log('window.eth', account)
-    console.log('publicArgs', publicArgs)
-    console.log('encryptedCommitments', encryptedCommitments)
-    console.log('decrypted', encryptedCommitments.map((i: string) => decrypt({
-      encrypted: i,
-      privateKey: wallet.pvtkey
-    })))
+    const provider = new ethers.BrowserProvider(window.ethereum)
 
-    dispatch({
-      type: 'setLoadingWithdraw',
-      payload: false,
-    })
+    const signer = await provider.getSigner();
+
+    const contract = new ethers.Contract(
+      contractAddress,
+      contractABI,
+      signer,
+    );
+
+    const [
+      a,
+      b,
+      c,
+      public_values
+    ] = JSON.parse(`[${publicArgs}]`)
+
+    try {
+      await contract.transact(
+        [
+          public_values,
+          a,
+          b,
+          c,
+        ],
+        [
+          account,
+          formatInteger(amount, 18),
+          tokenAddress,
+          [],
+          encryptedCommitments,
+          outputCommitments,
+        ]
+      )
+    } catch (e) {
+      console.warn(e)
+    } finally {
+      dispatch({
+        type: 'setLoadingWithdraw',
+        payload: false,
+      })
+    }
   }
 
   return (

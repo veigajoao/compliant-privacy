@@ -34,12 +34,9 @@ export function Header() {
             lg:py-[18px]
             flex
             justify-between
-            bg-[rgba(16,_20,_24,_0.88)]
-            backdrop-blur-[4px]
-            lg:bg-[#060A0F]/[0.42]
-            lg:backdrop-blur-[6px]
+            bg-[rgba(14,19,25,0.80)]
+            backdrop-blur-[14px]
             lg:mb-[8px]
-
             flex-col space-y-[12px]
             md:flex-row md:space-y-0
           "
@@ -48,7 +45,7 @@ export function Header() {
             <a href="/" aria-label="Home">
               <img
                 className="h-[32px] w-auto"
-                src="./logo.svg"
+                src="./logo.png"
               />
             </a>
           </div>

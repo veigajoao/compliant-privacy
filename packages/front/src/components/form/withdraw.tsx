@@ -1,28 +1,46 @@
 import { Input } from "../input";
 import { If } from "@/components/if";
+import { useState } from 'react'
 import { WithdrawButton } from "./withdraw-button";
+import { useOpactContext } from "@/context/opact";
 
 export function Withdraw() {
+  const [value, setValue] = useState()
+  const [address, setAddress] = useState()
+
+  const {
+    sendWithdraw
+  } = useOpactContext()
 
   return (
     <div className="space-y-[24px]">
       <Input
         value={''}
+        isDisabled={false}
         error={''}
         isValid={true}
-        isDisabled={false}
-        label="Withdrawal ticket"
-        placeholder="Paste your withdraw ticket"
+        label="Amount"
+        placeholder="0,00"
         onChange={(value) => {}}
       />
 
       <Input
         value={''}
-        isDisabled={false}
         error={''}
         isValid={true}
-        label="Recipient Address"
-        placeholder="Wallet Address"
+        isDisabled={false}
+        label="Select token"
+        placeholder="Choose token"
+        onChange={(value) => {}}
+      />
+
+      <Input
+        value={''}
+        error={''}
+        isValid={true}
+        isDisabled={false}
+        label="Recipient address"
+        placeholder="Address, domain or identity"
         onChange={(value) => {}}
       />
 
@@ -30,10 +48,10 @@ export function Withdraw() {
         className="pt-[16px]"
       >
         <WithdrawButton
-          isLoading={true}
-          buttonText={'Send Deposit'}
+          isLoading={false}
+          buttonText={'Send Withdraw'}
           isDisabled={false}
-          onClick={() => {}}
+          onClick={() => sendWithdraw()}
         />
       </div>
     </div>
