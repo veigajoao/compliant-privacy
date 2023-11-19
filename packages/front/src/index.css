@@ -5,12 +5,12 @@
 html {
   scroll-behavior: smooth;
   overflow-x: hidden;
-  background-color: #060A0F;
+  background-color: #060a0f;
 }
 
 html {
   scrollbar-width: thin;
-  scrollbar-color: #060A0F #060A0F;
+  scrollbar-color: #060a0f #060a0f;
 }
 
 /* Chrome, Edge and Safari */
@@ -20,28 +20,28 @@ html::-webkit-scrollbar {
 }
 html::-webkit-scrollbar-track {
   border-radius: 5px;
-  background-color: #060A0F;
+  background-color: #060a0f;
 }
 
 html::-webkit-scrollbar-track:hover {
-  background-color: #060A0F;
+  background-color: #060a0f;
 }
 
 html::-webkit-scrollbar-track:active {
-  background-color: #060A0F;
+  background-color: #060a0f;
 }
 
 html::-webkit-scrollbar-thumb {
   border-radius: 5px;
-  background-color: #060A0F;
+  background-color: #060a0f;
 }
 
 html::-webkit-scrollbar-thumb:hover {
-  background-color: #060A0F;
+  background-color: #060a0f;
 }
 
 html::-webkit-scrollbar-thumb:active {
-  background-color: #060A0F;
+  background-color: #060a0f;
 }
 
 body {
@@ -49,7 +49,7 @@ body {
   color: white;
   width: 100vw;
   height: 100vh;
-  background: #060A0F;
+  background: #060a0f;
 }
 
 .toast-position {
@@ -58,7 +58,7 @@ body {
 }
 
 .progress {
-  display:block;
+  display: block;
   transition: width 1s ease-out;
   -webkit-transition: width 1s ease-out;
   -moz-transition: width 1s ease-out;
@@ -72,7 +72,7 @@ body {
   pointer-events: none;
   left: -40px;
   z-index: 0;
-  content: '';
+  content: "";
   height: 100%;
   position: absolute;
   bottom: 0;
@@ -81,11 +81,7 @@ body {
   right: 100%;
   overflow: hidden;
   border-radius: 100px;
-  background: linear-gradient(
-    264.6deg,
-    #ad51ff 12.18%,
-    #1a92ff 91.42%
-  );
+  background: linear-gradient(264.6deg, #ad51ff 12.18%, #1a92ff 91.42%);
 }
 
 .modal-bg {
@@ -97,4 +93,12 @@ body {
   border-radius: 8px;
   background: rgba(6, 10, 15, 0.42);
   backdrop-filter: blur(6px);
+}
+
+@layer base {
+  input[type="number"]::-webkit-inner-spin-button,
+  input[type="number"]::-webkit-outer-spin-button {
+    -webkit-appearance: none;
+    margin: 0;
+  }
 }

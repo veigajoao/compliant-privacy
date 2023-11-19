@@ -13,6 +13,8 @@ import 'react-toastify/dist/ReactToastify.css';
 /* eslint-disable */
 
 import { Buffer } from 'buffer'
+import { OpactContextProvider } from './context/opact';
+
 globalThis.Buffer = Buffer
 
 declare global {
@@ -26,18 +28,20 @@ declare global {
 
 ReactDOM.createRoot(document.getElementById("root")!).render(
   <React.Fragment>
-    <App />
+    <OpactContextProvider>
+      <App />
 
-    <ToastContainer
-      className="toast-position"
-      position="bottom-right"
-      toastClassName={() =>
-        "relative flex  bg-[#1C2023] w-[420px] rounded-[8px]  px-[16px] relative"
-      }
-      limit={1}
-      pauseOnHover={false}
-      hideProgressBar={true}
-      pauseOnFocusLoss={false}
-    />
+      <ToastContainer
+        className="toast-position"
+        position="bottom-right"
+        toastClassName={() =>
+          "relative flex  bg-[#1C2023] w-[420px] rounded-[8px]  px-[16px] relative"
+        }
+        limit={1}
+        pauseOnHover={false}
+        hideProgressBar={true}
+        pauseOnFocusLoss={false}
+      />
+    </OpactContextProvider>
   </React.Fragment>
 );

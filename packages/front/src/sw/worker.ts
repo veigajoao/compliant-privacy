@@ -1,5 +1,5 @@
 import { debounce } from "../utils/debounce";
-import { plonk } from "snarkjs";
+import { groth16 } from 'snarkjs'
 
 export type FileWorkerInput = {
   type: "single_file";
@@ -30,29 +30,14 @@ self.addEventListener("message", async (event: any) => {
   try {
     const { input, wasm, zkey } = event.data.input as any;
 
-    self.postMessage({
-      type: "progress",
-      payload: 'start'
-    })
-
     /**
      * When is the first hit of IP on circuit.zkey, vercel returns 502. We retry to continue withdraw
      */
     try {
-      const res = await plonk.fullProve(
+      const res = await groth16.fullProve(
         input,
         wasm,
         zkey,
-        {
-          debug: debounce((message: string) => {
-            self.postMessage({
-              type: "progress",
-              payload: message
-            })
-
-            return message
-          }, 100)
-        }
       );
 
       self.postMessage(
@@ -65,7 +50,7 @@ self.addEventListener("message", async (event: any) => {
       console.warn('[Retry] First full prove error:', e);
 
       try {
-        const res = await plonk.fullProve(
+        const res = await groth16.fullProve(
           input,
           wasm,
           zkey,
